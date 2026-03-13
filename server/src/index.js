@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors' 
 import { rateLimit } from 'express-rate-limit' 
 import authRoutes from './routes/auth.js' 
+import macroRoutes from './routes/macros.js' 
 
 dotenv.config() 
 
@@ -28,6 +29,7 @@ app.use('/api/', limiter)
 
 // Routes
 app.use('/api/auth', authRoutes)
+app.use('/api/macros', macroRoutes)
 
 // Health check route
 app.get('/health', (req, res) => {
