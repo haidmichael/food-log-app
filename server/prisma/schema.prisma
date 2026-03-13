@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+
+  macroGoal MacroGoal?
+  foodLogs  FoodLog[]
+  waterLogs WaterLog[]
+}
+
+model MacroGoal {
+  id       String @id @default(uuid())
+  userId   String @unique
+  calories Int
+  protein  Int
+  carbs    Int
+  fat      Int
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model FoodLog {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime @db.Date
+  foodName  String
+  calories  Int
+  protein   Float
+  carbs     Float
+  fat       Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model WaterLog {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime @db.Date
+  amount    Float
+  unit      String   @default("oz")
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
