@@ -28,7 +28,11 @@ A full stack nutrition tracker built with Node/Express, PostgreSQL (Prisma), and
 5. Run `npx prisma migrate dev` in `/server`
 6. Start the server: `npm run dev` in `/server`
 7. Start the client: `npm run dev` in `/client`
-```
 
-**Your checklist before moving to Phase 1**
+## Known Audit Warnings
+Remaining `npm audit` warnings are isolated to Prisma's internal 
+dev tooling (`@prisma/dev`, `hono`, `lodash`). These packages are 
+not exposed in the application runtime and do not affect production 
+security. Fixing them requires a breaking Prisma downgrade.
+
 ```
