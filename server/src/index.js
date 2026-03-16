@@ -5,6 +5,7 @@ import { rateLimit } from 'express-rate-limit'
 import authRoutes from './routes/auth.js' 
 import macroRoutes from './routes/macros.js' 
 import foodRoutes from './routes/foods.js'
+import waterRoutes from './routes/water.js'
 
 dotenv.config() 
 
@@ -32,6 +33,7 @@ app.use('/api/', limiter)
 app.use('/api/auth', authRoutes)
 app.use('/api/macros', macroRoutes)
 app.use('/api/foods', foodRoutes)
+app.use('/api/water', waterRoutes)
 
 // Health check route
 app.get('/health', (req, res) => {
