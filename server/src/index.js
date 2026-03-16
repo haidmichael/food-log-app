@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js'
 import macroRoutes from './routes/macros.js' 
 import foodRoutes from './routes/foods.js'
 import waterRoutes from './routes/water.js'
+import summaryRoutes from './routes/summary.js'
 
 dotenv.config() 
 
@@ -34,6 +35,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/macros', macroRoutes)
 app.use('/api/foods', foodRoutes)
 app.use('/api/water', waterRoutes)
+app.use('/api/summary', summaryRoutes)
 
 // Health check route
 app.get('/health', (req, res) => {
