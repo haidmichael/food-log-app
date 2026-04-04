@@ -15,14 +15,15 @@ axiosClient.interceptors.request.use((config) => {
 
 //##### Handle expired tokens globally #####
 axiosClient.interceptors.response.use(
-    (response) => response, 
+    (response) => response,
     (error) => {
-        if (error.response?.status === 404) {
-            localStorage.removeItem('token')
-            window.location.href = '/login'
-        }
-        return Promise.reject(error) 
+        if (error.response?.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        window.location.href = '/login'
     }
+    return Promise.reject(error)
+  }
 )
 
 export default axiosClient

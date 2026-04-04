@@ -1,10 +1,19 @@
-import { useAddWater } from '../hooks/useWaterLog.js' 
+import { useAddWater, useWaterLog } from '../hooks/useWaterLog.js' 
+import axiosClient from '../api/axiosClient.js'
+import { useQueryClient } from '@tanstack/react-query'
 
-export default function WaterTracker({ date, total = 0, goal = 64}) {
-    const addWater = useAddWater() 
+export default function WaterTracker({ date, total = 0, goal = 64, entries = []}) {
+    const addWater = useAddWater()
+    const queryClient = useQueryClient()
 
     const handleAdd = (amount) => {
         addWater.mutate({ date, amount, unit: 'oz' })
+    }
+
+    const handleDelete = async (id) => {
+        await axiosClient.delete(`/api/water/${id}`)
+        queryClient.invalidateQueries({ queryKey: ['summary', date]})
+        queryClient.refetchQueries({ queryKey: ['summary', date]})
     }
 
     const precentage = Math.min((total / goal) * 100, 100)
@@ -41,7 +50,7 @@ export default function WaterTracker({ date, total = 0, goal = 64}) {
 
                 {/* Quick add buttons */}
                 <div style={{ display: 'flex', gap: '6px' }}>
-                    {[8, 16].map(amount =>(
+                    {[2, 4, 8, 16].map(amount =>(
                         <button
                             key={amount} 
                             onClick={() => handleAdd(amount)}
@@ -77,6 +86,40 @@ export default function WaterTracker({ date, total = 0, goal = 64}) {
                     transition: 'width 0.3s ease' 
                 }} />
             </div>
+
+            {/* Water entries list */}
+            {entries.length > 0 && (
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '10px'}}>
+                    {entries.map(entry => (
+                        <div
+                            key={entry.id}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center', 
+                                padding: '4px 0',
+                                fontSize: '12px', 
+                                color: 'var(--text-secondary)'
+                            }}
+                        >
+                            <span>💧 {entry.amount} oz</span>
+                            <button
+                                onClick={() => handleDelete(entry.id)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer', 
+                                    color: 'var(--text-muted)',
+                                    fontSize: '14px',
+                                    padding: '2px 4px'
+                                }}
+                            >
+                                🗑
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }

@@ -189,6 +189,7 @@ export default function DashboardPage() {
                 <WaterTracker
                     date={date}
                     total={water?.total || 0}
+                    entries={water?.entries || []}
                 />
             </div>
 
@@ -205,6 +206,7 @@ export default function DashboardPage() {
             </div>
             <FoodLogList 
                 entries={foodEntries || []}
+                date={date}
                 onAddClick={() => setShowSearch(true)}
             />
 

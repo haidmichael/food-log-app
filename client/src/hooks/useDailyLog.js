@@ -23,12 +23,14 @@ export function useAddFood() {
 }
 
 export function useDeleteFood(date) {
-    const queryClient = useQueryClient() 
-    return useMutation({
-        mutationFn: deleteFoodEntry, 
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['foodLog', date]})
-            queryClient.invalidateQueries({ queryKey: ['summary', date]})
-        }
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: deleteFoodEntry,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['summary', date] })
+      queryClient.invalidateQueries({ queryKey: ['foodLog', date] })
+      queryClient.refetchQueries({ queryKey: ['summary', date] })
+      queryClient.refetchQueries({ queryKey: ['foodLog', date] })
+    }
+  })
 }

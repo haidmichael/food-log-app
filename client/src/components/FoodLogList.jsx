@@ -1,7 +1,7 @@
 import { useDeleteFood } from '../hooks/useDailyLog.js' 
 
-export default function FoodLogList({ entries = [], onAddClick }) {
-    const deleteFood = useDeleteFood()
+export default function FoodLogList({ entries = [], date, onAddClick }) {
+    const deleteFood = useDeleteFood(date)
 
     return (
         <div style={{
