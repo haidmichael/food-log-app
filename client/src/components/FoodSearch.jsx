@@ -140,6 +140,14 @@ export default function FoodSearch({ date, onClose }) {
                                 }}>
                                     {food.name}
                                 </div>
+                                {food.brand && (
+                                    <div style={{
+                                        fontSize: '11px', 
+                                        color: 'var(--text-muted)'
+                                    }}>
+                                        {food.brand}
+                                    </div>
+                                )}
                                 <div style={{
                                     fontSize: '11px', 
                                     color: 'var(--text-muted)'
