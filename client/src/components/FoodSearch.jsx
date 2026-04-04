@@ -27,8 +27,6 @@ export default function FoodSearch({ date, onClose }) {
     }, [query])
 
     const handleAdd = (food) => {
-        console.log('adding food:...', food)
-        console.log('date being sent:...', date)
         addFood.mutate({
             date, 
             foodName: food.name, 
@@ -44,7 +42,7 @@ export default function FoodSearch({ date, onClose }) {
         <div style={{
             position: 'fixed', 
             inset: 0, 
-            background: 'rgba(0,0,0,0,0.5)',
+            background: 'rgba(0,0,0,0.5)',
             display: 'flex', 
             alignItems: 'flex-start', 
             justifyContent: 'center', 

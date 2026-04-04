@@ -22,7 +22,7 @@ function formatDate(dateStr) {
 export default function DashboardPage() {
     const [date, setDate] = useState(getToday())
     const [showSearch, setShowSearch] = useState(false) 
-    const { date: summary, isLoading, isError } = useSummary(date) 
+    const { data: summary, isLoading, isError } = useSummary(date) 
 
     const changeDate = (days) => {
         const current = new Date(date + 'T00:00:00')

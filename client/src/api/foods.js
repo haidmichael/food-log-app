@@ -1,4 +1,4 @@
-import axiosClient from './axiosClient'
+import axiosClient from './axiosClient.js'
 
 export const getFoodLog = async (date) => {
     const response = await axiosClient.get(`/api/foods/${date}`) 

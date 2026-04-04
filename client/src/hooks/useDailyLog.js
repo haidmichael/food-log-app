@@ -10,18 +10,16 @@ export function useFoodLog(date) {
 }
 
 export function useAddFood() {
-    const queryClient = useQueryClient() 
-    return useMutation({
-        mutationFn: addFoodEntry, 
-        onSuccess: (_, variables) => {
-            console.log('onSuccess fired, date:', variables.date)
-            queryClient.invalidateQueries({ queryKey: ['foodLog', variables.date]})
-            queryClient.invalidateQueries({ queryKey: ['summary', variables.date]})
-        },
-        onError: (error) => {
-            console.log('mutation error:', error)
-        }
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: addFoodEntry,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['summary', variables.date] })
+      queryClient.invalidateQueries({ queryKey: ['foodLog', variables.date] })
+      queryClient.refetchQueries({ queryKey: ['summary', variables.date] })
+      queryClient.refetchQueries({ queryKey: ['foodLog', variables.date] })
+    }
+  })
 }
 
 export function useDeleteFood(date) {
