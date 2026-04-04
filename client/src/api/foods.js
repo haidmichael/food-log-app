@@ -16,6 +16,6 @@ export const deleteFoodEntry = async (id) => {
 }
 
 export const searchFoods = async (query) => {
-    const response = await axiosClient.get(`/api/foods/${query}`) 
+    const response = await axiosClient.get(`/api/search?query=${query}`) 
     return response.data 
 }

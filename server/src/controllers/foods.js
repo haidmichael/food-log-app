@@ -7,7 +7,7 @@ export const getFoodLog = async (req, res) => {
         const entries = await prisma.foodLog.findMany({
             where: {
                 userId: req.user.userId, 
-                date: new Date(date) 
+                date: new Date(date)
             },
             orderBy: { createdAt: 'asc' }
         })
@@ -21,6 +21,7 @@ export const getFoodLog = async (req, res) => {
 }
 
 export const addFoodLog = async (req, res) => {
+    console.log('addFoodEntry body:...', req.body)
     try {
         const { date, foodName, calories, protein, carbs, fat } = req.body
 

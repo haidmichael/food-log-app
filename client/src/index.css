@@ -50,3 +50,9 @@ input, button, select, textarea {
 a {
   color: var(--text-primary);
 }
+
+@media (max-width: 600px ) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
