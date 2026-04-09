@@ -1,9 +1,10 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext.jsx' 
-import NavBar from "./components/NavBar.jsx"
-import LoginPage from "./pages/LoginPage.jsx"
-import RegisterPage from "./pages/RegisterPage.jsx"
-import DashboardPage from "./pages/DashboardPage.jsx"
+import NavBar from './components/NavBar.jsx'
+import LoginPage from './pages/LoginPage.jsx'
+import RegisterPage from './pages/RegisterPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
+import GoalsPage from './pages/GoalsPage.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -38,7 +39,7 @@ export default function App() {
       <Route path="/goals" element={
         <ProtectedRoute>
           <ProtectedLayout>
-            <div>Goals coming soon!</div>
+            <GoalsPage />
           </ProtectedLayout>
         </ProtectedRoute>
       } />

@@ -155,9 +155,9 @@ export default function DashboardPage() {
                     color='var(--error)'
                 />
                 <MacroCard
-                    label='Protien'
-                    consumed={consumed?.protien || 0}
-                    goal={goals?.protien}
+                    label='Protein'
+                    consumed={consumed?.protein || 0}
+                    goal={goals?.protein}
                     color='var(--success)'
                 />
                 <MacroCard
