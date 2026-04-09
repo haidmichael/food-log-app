@@ -7,7 +7,7 @@ export const getFoodLog = async (req, res) => {
         const entries = await prisma.foodLog.findMany({
             where: {
                 userId: req.user.userId, 
-                date: new Date(date) 
+                date: new Date(date)
             },
             orderBy: { createdAt: 'asc' }
         })
