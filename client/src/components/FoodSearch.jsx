@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { searchFoods } from '../api/foods.js'
 import {useAddFood } from '../hooks/useDailyLog.js'
 
-export default function FoodSearch({ date, onClose }) {
+export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
     const [searching, setSearching] = useState(false)
-    const addFood = useAddFood() 
+    const [selectedMeal, setSelectedMeal] = useState(defaultMeal)
+    const addFood = useAddFood()
 
     useEffect(() => {
         if (query.length < 2) return setResults([])
@@ -28,7 +29,8 @@ export default function FoodSearch({ date, onClose }) {
 
     const handleAdd = (food) => {
         addFood.mutate({
-            date, 
+            date,
+            meal: selectedMeal,
             foodName: food.name, 
             calories: food.calories, 
             protein: food.protein, 
@@ -37,6 +39,8 @@ export default function FoodSearch({ date, onClose }) {
         })
         onClose() 
     }
+
+    const meals = ['breakfast', 'lunch', 'dinner', 'snack']
 
     return (
         <div style={{
@@ -60,40 +64,67 @@ export default function FoodSearch({ date, onClose }) {
                 {/* Search Header */}
                 <div style={{
                     padding: '16px',
-                    borderBottom: '1px solid var(--border)',
-                    display: 'flex',
-                    gap: '8px',
-                    alignItems: 'center'
+                    borderBottom: '1px solid var(--border)'
                 }}>
-                    <input 
-                        autoFocus
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder='Search foods...'
-                        style={{
-                            padding: '10px',
-                            border: '1px solid var(--border)',
-                            borderRadius: 'var(--radius-sm)',
-                            background: 'var(--bg-input)',
-                            color: 'var(--text-primary)',
-                            fontSize: '14px'
-                        }}
-                    />
-                    <button 
-                        onClick={onClose}
-                        style={{
-                            background: 'none',
-                            border: '1px solid var(--border)',
-                            borderRadius: 'var(--radius-sm)',
-                            padding: '10px',
-                            cursor: 'pointer',
-                            color: 'var(--text-secondary)',
-                            fontSize: '13px'
-                        }}
-                    >
+                    {/* Meal Selector */}
+                    <div style={{
+                        display: 'flex',
+                        gap: '6px',
+                        marginBottom: '10px',
+                        flexWrap: 'wrap'
+                    }}>
+                        {meals.map(meal => (
+                            <button
+                                key={meal}
+                                onClick={() => setSelectedMeal(meal)}
+                                style={{
+                                    padding: '5px 12px',
+                                    fontSize: '12px',
+                                    fontWeight: '500',
+                                    borderRadius: 'var(--radius-sm)',
+                                    border: '1px solid var(--border)',
+                                    cursor: 'pointer',
+                                    background: selectedMeal === meal? 'var(--accent)' : 'var(--bg-secondary)',
+                                    color: selectedMeal === meal ? 'var(--accent-text)' : 'var(--text-secondary)',
+                                    textTransform: 'capitalize'
+                                }}
+                            >
+                                {meal}
+                            </button>
+                        ))}
+                    </div>
 
-                        Cancel
-                    </button>
+                    {/* Search Input */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center'}}>
+                        <input 
+                            autoFocus
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder='Search foods...'
+                            style={{
+                                padding: '10px',
+                                border: '1px solid var(--border)',
+                                borderRadius: 'var(--radius-sm)',
+                                background: 'var(--bg-input)',
+                                color: 'var(--text-primary)',
+                                fontSize: '14px'
+                            }}
+                        />
+                        <button 
+                            onClick={onClose}
+                            style={{
+                                background: 'none',
+                                border: '1px solid var(--border)',
+                                borderRadius: 'var(--radius-sm)',
+                                padding: '10px',
+                                cursor: 'pointer',
+                                color: 'var(--text-secondary)',
+                                fontSize: '13px'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
 
                 {/* Results */}
@@ -127,8 +158,7 @@ export default function FoodSearch({ date, onClose }) {
                                 borderBottom: '1px solid var(--border)',
                                 display: 'flex',
                                 justifyContent: 'space-between',
-                                alignItems: 'center',
-                                cursor: 'pointer'
+                                alignItems: 'center'
                             }}
                         >
                             <div>

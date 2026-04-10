@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useSummary } from '../hooks/useSummary.js'
 import MacroCard from '../components/MacroCard.jsx'
 import WaterTracker from '../components/WaterTracker.jsx'
+import MealSection from '../components/MealSection.jsx'
 import FoodLogList from '../components/FoodLogList.jsx'
 import FoodSearch from '../components/FoodSearch.jsx'
 
@@ -21,7 +21,7 @@ function formatDate(dateStr) {
 
 export default function DashboardPage() {
     const [date, setDate] = useState(getToday())
-    const [showSearch, setShowSearch] = useState(false) 
+    const [activeMeal, setActiveMeal] = useState(null) 
     const { data: summary, isLoading, isError } = useSummary(date) 
 
     const changeDate = (days) => {
@@ -52,7 +52,7 @@ export default function DashboardPage() {
         </div>
     )
 
-    const { goals, consumed, water, foodEntries } = summary || {} 
+    const { goals, consumed, meals, mealTotals, water } = summary || {} 
 
     return (
         <div>
@@ -194,6 +194,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Food log */}
+            {/* Meal Section */}
             <div style={{
                 fontSize: '11px',
                 fontWeight: '500',
@@ -204,17 +205,23 @@ export default function DashboardPage() {
             }}>
                 Today's Food 
             </div>
-            <FoodLogList 
-                entries={foodEntries || []}
-                date={date}
-                onAddClick={() => setShowSearch(true)}
-            />
+
+            {[ 'breakfast', 'lunch', 'dinner', 'snack' ].map(meal => (
+                <MealSection
+                    key={meal}
+                    meal={meal}
+                    entries={meals?.[meal] || []}
+                    totals={mealTotals?.[meal] || {calories: 0, protein: 0, carbs: 0, fat: 0 }}
+                    date={date}
+                    onAddClick={() => setActiveMeal(meal)}
+                />
+            ))}
 
             {/* Food search modal */}
-            {showSearch && (
+            {activeMeal && (
                 <FoodSearch
                     date={date}
-                    onClose={() => setShowSearch(false)}
+                    onClose={() => setActiveMeal(false)}
                 />
             )}
         </div>

@@ -34,5 +34,6 @@ Remaining `npm audit` warnings are isolated to Prisma's internal
 dev tooling (`@prisma/dev`, `hono`, `lodash`). These packages are 
 not exposed in the application runtime and do not affect production 
 security. Fixing them requires a breaking Prisma downgrade.
-
+Prisma update available (7.5.0 → 7.7.0) -
+deferred until post-deployment to avaid mid-build breaking changes.
 ```

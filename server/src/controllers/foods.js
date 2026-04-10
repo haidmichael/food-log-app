@@ -22,12 +22,13 @@ export const getFoodLog = async (req, res) => {
 
 export const addFoodLog = async (req, res) => {
     try {
-        const { date, foodName, calories, protein, carbs, fat } = req.body
+        const { date, meal, foodName, calories, protein, carbs, fat } = req.body
 
         const entry = await prisma.foodLog.create({
             data: {
                 userId: req.user.userId, 
                 date: new Date(date),
+                meal,
                 foodName, 
                 calories, 
                 protein, 

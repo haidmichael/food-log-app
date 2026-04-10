@@ -14,12 +14,18 @@ export const getDailySummary = async (req, res) => {
                 where: {
                     userId, 
                     date: new Date(date) 
+                },
+                orderBy: {
+                    createdAt: 'asc'
                 }
             }), 
             prisma.waterLog.findMany({
                 where: {
                     userId, 
                     date: new Date(date) 
+                },
+                orderBy: {
+                    createdAt: 'asc'
                 }
             })
         ])
@@ -34,6 +40,32 @@ export const getDailySummary = async (req, res) => {
             }), 
             { calories: 0, protein: 0, carbs: 0, fat: 0 }
         )
+
+        // ##### Group food entries by meal
+        const meals = {
+            breakfast: [], 
+            lunch: [], 
+            dinner: [], 
+            snack: []
+        }
+
+        foodEntries.forEach(entry => {
+            const meal = entry.meal || 'snack'
+            meals[meal].push(entry)
+        })
+
+        const mealTotals = {}
+        Object.keys(meals).forEach(meal => {
+            mealTotals[meal] = meals[meal].reduce(
+                (totals, entry) => ({
+                calories: totals.calories + entry.calories, 
+                protein:  totals.protein  + entry.protein, 
+                carbs:    totals.carbs    + entry.carbs, 
+                fat:      totals.fat      + entry.fat 
+                }),
+                { calories: 0, protein: 0, carbs: 0, fat: 0 }
+            )
+        })
 
         //##### Calculate water total #####
         const waterTotal = waterEntries.reduce(
@@ -52,7 +84,9 @@ export const getDailySummary = async (req, res) => {
             date, 
             goals: goals || null, 
             consumed, 
-            remaining, 
+            remaining,
+            meals,
+            mealTotals,
             water: { 
                 entries: waterEntries, 
                 total: waterTotal, 
