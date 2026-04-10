@@ -3,7 +3,6 @@ import { useSummary } from '../hooks/useSummary.js'
 import MacroCard from '../components/MacroCard.jsx'
 import WaterTracker from '../components/WaterTracker.jsx'
 import MealSection from '../components/MealSection.jsx'
-import FoodLogList from '../components/FoodLogList.jsx'
 import FoodSearch from '../components/FoodSearch.jsx'
 
 function getToday() {
