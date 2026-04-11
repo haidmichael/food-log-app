@@ -31,16 +31,18 @@ model MacroGoal {
 }
 
 model FoodLog {
-  id        String   @id @default(uuid())
-  userId    String
-  date      DateTime @db.Date
-  meal      String @default("snack")
-  foodName  String
-  calories  Int
-  protein   Float
-  carbs     Float
-  fat       Float
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime @db.Date
+  meal        String   @default("snack")
+  foodName    String
+  servingSize Float    @default(100)
+  servingUnit String   @default("g")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }

@@ -102,7 +102,7 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
                             fontSize: '11px',
                             color: 'var(--text-muted)'
                         }}>
-                            {entry.calories} cal · {entry.protein}g protein · {entry.carbs}g carbs · {entry.fat}g fat
+                            {entry.servingSize}{entry.servingUnit} · {entry.calories} cal · {entry.protein}g protein · {entry.carbs}g carbs · {entry.fat}g fat
                         </div>
                     </div>
                     <button
