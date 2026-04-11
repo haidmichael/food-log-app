@@ -26,7 +26,7 @@ export default function MacroCard({ label, consumed, goal, color }) {
                 color: isOver ? 'var(--error)' : 'var(--text-primary)',
                 marginBottom: '2px'
             }}>
-                {consumed}
+                {Math.round(consumed * 10) / 10}
             </div>
 
             <div style={{
@@ -59,8 +59,8 @@ export default function MacroCard({ label, consumed, goal, color }) {
                     fontWeight: isOver ? '500' : '400'
                 }}>
                     {isOver
-                        ? `${Math.abs(remaining)} over goal`
-                        : `${remaining} remaining`
+                        ? `${Math.round(Math.abs(remaining) * 10 / 10)} over goal`
+                        : `${Math.round(remaining * 10) / 10} remaining`
                     }
                 </div>
             )}
