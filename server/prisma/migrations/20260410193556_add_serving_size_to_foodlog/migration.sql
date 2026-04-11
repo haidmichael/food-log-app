@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "FoodLog" ADD COLUMN     "servingSize" DOUBLE PRECISION NOT NULL DEFAULT 100,
+ADD COLUMN     "servingUnit" TEXT NOT NULL DEFAULT 'g';

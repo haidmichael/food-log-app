@@ -22,17 +22,20 @@ export const getFoodLog = async (req, res) => {
 
 export const addFoodLog = async (req, res) => {
     try {
-        const { date, foodName, calories, protein, carbs, fat } = req.body
+        const { date, meal, foodName, servingSize, servingUnit, calories, protein, carbs, fat } = req.body
 
         const entry = await prisma.foodLog.create({
             data: {
                 userId: req.user.userId, 
                 date: new Date(date),
-                foodName, 
+                meal,
+                foodName,
+                servingSize,
+                servingUnit,
                 calories, 
                 protein, 
                 carbs, 
-                fat 
+                fat
             }
         })
 
@@ -43,7 +46,7 @@ export const addFoodLog = async (req, res) => {
 
     } catch (err) {
         console.error(err)
-        res.status(500).json({ error: 'Failed to get food log' })
+        res.status(500).json({ error: 'Failed to get food entry' })
     }
 }
 
