@@ -17,6 +17,7 @@ model User {
   macroGoal MacroGoal?
   foodLogs  FoodLog[]
   waterLogs WaterLog[]
+  savedMeal SavedMeal[]
 }
 
 model MacroGoal {
@@ -56,4 +57,30 @@ model WaterLog {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model SavedMeal {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User            @relation(fields: [userId], references: [id])
+  items SavedMealItem[]
+}
+
+model SavedMealItem {
+  id          String  @id @default(uuid())
+  savedMealId String
+  foodName    String
+  servingSize Float
+  servingUnit String  @default("g")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+
+  savedMeal SavedMeal @relation(fields: [savedMealId], references: [id], onDelete: Cascade)
 }

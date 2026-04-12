@@ -8,6 +8,7 @@ import foodRoutes from './routes/foods.js'
 import waterRoutes from './routes/water.js'
 import summaryRoutes from './routes/summary.js'
 import searchRoutes from './routes/search.js'
+import savedMealRoutes from './routes/savedMeals.js'
 
 dotenv.config() 
 
@@ -38,6 +39,7 @@ app.use('/api/foods', foodRoutes)
 app.use('/api/water', waterRoutes)
 app.use('/api/summary', summaryRoutes)
 app.use('/api/search', searchRoutes)
+app.use('/api/saved-meals', savedMealRoutes)
 
 // Health check route
 app.get('/health', (req, res) => {
