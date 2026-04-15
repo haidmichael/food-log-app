@@ -20,14 +20,12 @@ export default function SavedMealsPage() {
     const logMeal = useLogSavedMeal(today)
 
     const handleLog = (savedMeal, mealTime) => {
-        console.log('logging meal:', savedMeal.id, 'to:', mealTime)
         logMeal.mutate({
             id: savedMeal.id,
             date: today,
             meal: mealTime
         }, {
-            onSuccess: (data) => {
-                console.log('log success:', data)
+            onSuccess: () => {
                 setLoggingMeal(null)
                 navigate('/dashboard')
             }, 
@@ -307,7 +305,7 @@ export default function SavedMealsPage() {
                     position: 'fixed',
                     inset: 0,
                     background: 'rgba(0,0,0,0.3)',
-                    zIndex: 100
+                    zIndex: -1
                 }}
                 />
             )}
