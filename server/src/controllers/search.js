@@ -13,13 +13,17 @@ export const searchFoods = async (req, res) => {
         if (!response.ok) {
             throw new Error('USDA API request failed')
         }
-
+        
         const data = await response.json()
-
+        // console.log('USDA first result: ', JSON.stringify(data.foods[0], null, 2))
+        
         const foods = data.foods.map(food => ({
             fdcId: food.fdcId, 
             name: food.description, 
-            brand: food.brandOwner || null, 
+            brand: food.brandOwner || null,
+            servingSize: food.servingSize || 100,
+            servingUnit: food.servingUnit || 'g',
+            householdServing: food.householdServingFullText || null,
             calories: getNutrient(food.foodNutrients, 1008), 
             protein:  getNutrient(food.foodNutrients, 1003),
             carbs: getNutrient(food.foodNutrients, 1005),

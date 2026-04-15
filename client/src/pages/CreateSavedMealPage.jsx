@@ -5,9 +5,10 @@ import { searchFoods } from '../api/foods.js'
 
 const OZ_TO_G = 28.3495
 
-function calculateMacros(food, servingSize, servingUnit) {
-    const grams = servingUnit === 'oz' ? servingSize * OZ_TO_G : servingSize
-    const ratio = grams / 100
+function calculateMacros(food, userServingSize, userServingUnit) {
+  const userGrams = userServingUnit === 'oz' ? userServingSize * OZ_TO_G : userServingSize
+  const baseGrams = food.servingSize || 100
+  const ratio = userGrams / baseGrams
 
     return {
         calories: Math.round(food.calories * ratio),
@@ -63,7 +64,12 @@ export default function CreateSavedMealPage() {
 
     const handleSelectFood = (food) => {
         setSelectedFood(food)
-        setServingSize(servingUnit === 'g' ? 100 : 3.5)
+        // Default to the foods actual serving size
+        if (servingUnit === 'oz') {
+            setServingSize(Math.round((food.servingSize / OZ_TO_G) * 10) / 10)
+        } else {
+            setServingSize(food.servingSize || 100)
+        }
         setQuery('')
         setResults([])
     }
@@ -456,6 +462,17 @@ export default function CreateSavedMealPage() {
                     ))}
                     </div>
                 </div>
+
+                {/* Serving Hints */}
+                {selectedFood.householdServing &&(
+                    <div style={{
+                        fontSize: '11px',
+                        color: 'var(--text-muted)',
+                        marginBottom: '8px'
+                    }}>
+                        1 serving = {selectedFood.householdServing} ({selectedFood.servingSize}{selectedFood.servingSizeUnit})
+                    </div>
+                )}
 
                 {/* Live preview */}
                 {preview && (
