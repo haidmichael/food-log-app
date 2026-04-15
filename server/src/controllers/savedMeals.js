@@ -8,7 +8,7 @@ export const getSavedMeals = async (req, res) => {
             include: { items: true },
             orderBy: { createdAt: 'desc' }
         })
-        res.json(('meals data', JSON.stringify(meals)))
+        res.json(JSON.parse(JSON.stringify(meals)))
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: 'Failed to get saved meals' })
@@ -45,7 +45,7 @@ export const createSavedMeal = async (req, res) => {
     try {
         const { name, description, items } = req.body
         
-        const meal = await prisma.savedMeal.create({
+        const meals = await prisma.savedMeal.create({
             data: {
                 userId: req.user.userId,
                 name,

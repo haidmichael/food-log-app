@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import GoalsPage from './pages/GoalsPage.jsx'
+import SavedMealsPage from './pages/SavedMealsPage.jsx'
+import CreateSavedMealPage from './pages/CreateSavedMealPage.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -43,6 +45,20 @@ export default function App() {
           </ProtectedLayout>
         </ProtectedRoute>
       } />
+        <Route path="/saved-meals" element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <SavedMealsPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/saved-meals/new" element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <CreateSavedMealPage />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } />
       <Route path='*' element={<Navigate to='/login' replace />}/>
     </Routes>
   )
