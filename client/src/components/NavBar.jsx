@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext' 
-import { useTheme } from '../context/ThemeContext' 
+import { useAuth } from '../context/AuthContext.jsx' 
+import { useTheme } from '../context/ThemeContext.jsx' 
 
 export default function NavBar() {
     const { user, logout } = useAuth()
@@ -64,6 +64,19 @@ export default function NavBar() {
                 }}
                 >
                     Goals
+                </Link>
+                <Link 
+                    to="/saved-meals"
+                    style={{
+                        fontSize: '13px',
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        padding: '6px 10px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border)'
+                    }}
+                >
+                    Saved Meals
                 </Link>
 
                 {/* Theme toggle */}

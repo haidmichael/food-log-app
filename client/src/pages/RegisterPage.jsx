@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [inviteCode, setInviteCode] = useState('')
 
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
@@ -20,7 +21,7 @@ export default function RegisterPage() {
     setError(null)
 
     try {
-      await registerUser({ name, email, password })
+      await registerUser({ name, email, password, inviteCode })
       navigate('/login')
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed')
@@ -77,6 +78,32 @@ export default function RegisterPage() {
       )}
 
       <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{
+            display: 'block',
+            fontSize: '13px', 
+            color: 'var(--text-secondary)',
+            marginBottom: '6px'
+          }}>
+            Invite Code
+          </label>
+          <input 
+            type="text"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
+            placeholder='Enter your invite code'
+            required
+            style={{
+              widty: '100%',
+              padding: '10px',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--bg-input)', 
+              color: 'var(--text-primary)',
+              fontSize: '14px'
+            }}
+          />
+        </div>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{
             display: 'block',

@@ -4,9 +4,16 @@ import {useAddFood } from '../hooks/useDailyLog.js'
 
 const OZ_TO_G = 28.3495
 
-function calculateMacros(food, servingSize, servingUnit) {
-    const grams = servingUnit === 'oz' ? servingSize * OZ_TO_G : servingSize
-    const ratio = grams / 100
+function calculateMacros(food, userServingSize, userServingUnit) {
+    const userGrams = userServingUnit === 'oz' 
+    ? userServingSize * OZ_TO_G 
+    : userServingSize
+    
+    const baseGrams = food.servingSize === 'oz' 
+    ? (food.servingSize || 100) * OZ_TO_G
+    : (food.servingSize || 100)
+    
+    const ratio = userGrams / baseGrams
 
     return {
         calories: Math.round(food.calories * ratio),
@@ -60,8 +67,14 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
 
     const handleSelectFood = (food) => {
         setSelectedFood(food)
-        // Default serving to 100g or 3.5oz equivalent
-        setServingSize(servingUnit === 'g' ? 100 : 3.5)
+        // Default to the foods actual serving size
+        if (servingUnit === 'oz') {
+            setServingSize(Math.round((food.servingSize / OZ_TO_G) * 10) / 10)
+        } else {
+            setServingSize(food.servingSize || 100)
+        }
+        setQuery('')
+        setResults([])
     }
 
     const handleConfirm = () => {
@@ -262,6 +275,17 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
                             </span>
                         </div>
 
+                        {/* Serving hint */}
+                        {selectedFood.householdServing && (
+                        <div style={{
+                            fontSize: '11px',
+                            color: 'var(--text-muted)',
+                            marginBottom: '8px'
+                        }}>
+                            1 serving = {selectedFood.householdServing} ({selectedFood.servingSize}{selectedFood.servingSizeUnit})
+                        </div>
+                        )}
+
                         {/* Live Macro Preview */}
                         {preview && (
                             <div style={{
@@ -414,11 +438,11 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
                                         {food.brand}
                                     </div>
                                 )}
-                                <div style={{
-                                    fontSize: '11px', 
-                                    color: 'var(--text-muted)'
-                                }}>
+                                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                     {food.calories} cal · {food.protein}g protein · {food.carbs}g carbs · {food.fat}g fat
+                                    <span style={{ marginLeft: '4px' }}>
+                                        {food.householdServing ? `per ${food.householdServing}` : 'per 100g'}
+                                    </span>
                                 </div>
                         </div>
                         <button 

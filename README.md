@@ -36,4 +36,10 @@ not exposed in the application runtime and do not affect production
 security. Fixing them requires a breaking Prisma downgrade.
 Prisma update available (7.5.0 → 7.7.0) -
 deferred until post-deployment to avaid mid-build breaking changes.
+
+## Known Data Limitations
+USDA FoodData Central branded food data may not always match
+current product nutrition labels. Users can manually adjust 
+serving size or use the custom food feature (coming soon)
+to add accurate entries.
 ```

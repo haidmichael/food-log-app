@@ -13,18 +13,35 @@ export const searchFoods = async (req, res) => {
         if (!response.ok) {
             throw new Error('USDA API request failed')
         }
-
+        
         const data = await response.json()
 
-        const foods = data.foods.map(food => ({
-            fdcId: food.fdcId, 
-            name: food.description, 
-            brand: food.brandOwner || null, 
-            calories: getNutrient(food.foodNutrients, 1008), 
-            protein:  getNutrient(food.foodNutrients, 1003),
-            carbs: getNutrient(food.foodNutrients, 1005),
-            fat: getNutrient(food.foodNutrients, 1004)
-        }))
+        function normalizeUnit(unit) {
+            if (!unit) return 'g'
+            const u = unit.toLowerCase()
+            if(u === 'g' || u === 'grm' || u === 'grams') return 'g'
+            if(u === 'oz' || u === 'ounce' || u === 'ounces') return 'oz'
+            if(u === 'ml' || u === 'milliliter') return 'ml'
+            return 'g'
+        }
+        
+        const foods = data.foods.map(food => {
+            const rawUnit = food.servingSizeUnit
+            const normalizedUnit = normalizeUnit(rawUnit)
+
+            return {
+                fdcId: food.fdcId, 
+                name: food.description, 
+                brand: food.brandOwner || null,
+                servingSize: food.servingSize || 100,
+                servingUnit: normalizedUnit,
+                householdServing: food.householdServingFullText || null,
+                calories: getNutrient(food.foodNutrients, 1008), 
+                protein:  getNutrient(food.foodNutrients, 1003),
+                carbs: getNutrient(food.foodNutrients, 1005),
+                fat: getNutrient(food.foodNutrients, 1004)
+            }
+        })
 
         res.json({ foods })
         
