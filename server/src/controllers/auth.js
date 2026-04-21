@@ -4,7 +4,12 @@ import prisma from '../prisma.js'
 
 export const register = async (req, res) => {
     try {
-        const { email, password, name } = req.body
+        const { email, password, name, inviteCode } = req.body
+
+        // ##### Check invite code #####
+        if (inviteCode !== process.env.INVITE_CODE) {
+            return res.status(403).json({ error: 'Invalid invite code' })
+        }
 
         //##### Check if user already exists #####
         const existingUser = await prisma.user.findUnique({

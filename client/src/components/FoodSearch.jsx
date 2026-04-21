@@ -5,8 +5,14 @@ import {useAddFood } from '../hooks/useDailyLog.js'
 const OZ_TO_G = 28.3495
 
 function calculateMacros(food, userServingSize, userServingUnit) {
-    const userGrams = userServingUnit === 'oz' ? userServingSize * OZ_TO_G : userServingSize
-    const baseGrams = food.servingSize || 100
+    const userGrams = userServingUnit === 'oz' 
+    ? userServingSize * OZ_TO_G 
+    : userServingSize
+    
+    const baseGrams = food.servingSize === 'oz' 
+    ? (food.servingSize || 100) * OZ_TO_G
+    : (food.servingSize || 100)
+    
     const ratio = userGrams / baseGrams
 
     return {

@@ -5,7 +5,7 @@ export function useMacroGoals() {
     return useQuery({
         queryKey: ['macroGoals'], 
         queryFn: getMacroGoals,
-        return: false
+        retry: false
     })
 }
 

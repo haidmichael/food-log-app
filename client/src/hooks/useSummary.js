@@ -5,6 +5,7 @@ export function useSummary(date) {
     return useQuery({
         queryKey: ['summary', date], 
         queryFn: () => getDailySummary(date),
-        enabled: !!date 
+        enabled: !!date, 
+        retry: false
     })
 }
