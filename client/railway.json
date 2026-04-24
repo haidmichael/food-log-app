@@ -1,6 +1,6 @@
 {
   "deploy": {
-    "startCommand": "npx serve dist --config ../serve.json",
+    "startCommand": "npx serve dist -s",
     "restartPolicyType": "ON_FAILURE"
   }
 }
