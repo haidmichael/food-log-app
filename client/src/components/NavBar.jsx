@@ -7,6 +7,11 @@ export default function NavBar() {
     const { theme, toggleTheme } = useTheme() 
     const navigate = useNavigate() 
 
+    const fistName = user?.name?.split(' ')[0]
+    const capitalizedName = fistName 
+        ? fistName.charAt(0).toUpperCase() + fistName.slice(1).toLowerCase() 
+        : ''
+
     const handleLogout = () => {
         logout()
         navigate('/login')
@@ -35,7 +40,7 @@ export default function NavBar() {
                     color: 'var(--text-primary)'
                 }}
             >
-                🥗 Food Log 
+                🥗 {capitalizedName}'s Food Log 
             </Link>
 
             {/* Right - nav actions */}
@@ -45,11 +50,8 @@ export default function NavBar() {
                 <span style={{
                     fontSize: '13px',
                     color: 'var(--text-muted)',
-                    display: 'none'
-                }}
-                    className="hide-mobile"
-                >
-                    Hey, {user?.name}!
+                }}>
+                    Hey, {capitalizedName}!
                 </span>
                 {/* Goals link */}
                 <Link
