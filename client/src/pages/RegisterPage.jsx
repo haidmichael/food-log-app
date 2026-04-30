@@ -116,6 +116,7 @@ export default function RegisterPage() {
           <input
             type="text"
             value={name}
+            placeholder="First Last"
             onChange={(e) => setName(e.target.value)}
             required
             style={{

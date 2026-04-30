@@ -7,6 +7,12 @@ export default function NavBar() {
     const { theme, toggleTheme } = useTheme() 
     const navigate = useNavigate() 
 
+    const fistName = user?.name?.split(' ')[0]
+    const capitalizedName = fistName 
+        ? fistName.charAt(0).toUpperCase() 
+        + fistName.slice(1).toLowerCase() 
+        : ''
+
     const handleLogout = () => {
         logout()
         navigate('/login')
@@ -35,22 +41,34 @@ export default function NavBar() {
                     color: 'var(--text-primary)'
                 }}
             >
-                🥗 Food Log 
+                🥗  Chomp Tracker Dashboard
+                {/* 🥗 {capitalizedName}'s Food Log  */}
             </Link>
+
+            {/* Welcome message */}
+            <span style={{
+                // display: 'flex', 
+                // alignItems: 'center',
+                flex: 1,
+                textAlign: 'center',
+                fontSize: '13px',
+                color: 'var(--text-muted)',
+            }}>
+                Hey, {capitalizedName}!
+            </span>
 
             {/* Right - nav actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
 
                 {/* Welcome message */}
-                <span style={{
+                {/* <span style={{
+                    display: 'flex', 
+                    alignItems: 'center',
                     fontSize: '13px',
                     color: 'var(--text-muted)',
-                    display: 'none'
-                }}
-                    className="hide-mobile"
-                >
-                    Hey, {user?.name}!
-                </span>
+                }}>
+                    Hey, {capitalizedName}!
+                </span> */}
                 {/* Goals link */}
                 <Link
                 to="/goals"

@@ -116,7 +116,7 @@ export const logSavedMeal = async (req, res) => {
         const entries = await prisma.foodLog.createMany({
             data: savedMeal.items.map(item => ({
                 userId: req.user.userId,
-                date: new Date(date),
+                date: new Date(date + 'T12:00:00.000Z'),
                 meal,
                 foodName: item.foodName,
                 servingSize: item.servingSize,

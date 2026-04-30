@@ -59,7 +59,7 @@ export default function LoginPage() {
       </div>
 
       <h1 style={{ fontSize: '22px', marginBottom: '4px', color: 'var(--text-primary)' }}>
-        🥗 Food Log
+        🥗 Chomp Tracker
       </h1>
       <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '1.5rem' }}>
         Sign in to your account
