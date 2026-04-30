@@ -9,7 +9,8 @@ export default function NavBar() {
 
     const fistName = user?.name?.split(' ')[0]
     const capitalizedName = fistName 
-        ? fistName.charAt(0).toUpperCase() + fistName.slice(1).toLowerCase() 
+        ? fistName.charAt(0).toUpperCase() 
+        + fistName.slice(1).toLowerCase() 
         : ''
 
     const handleLogout = () => {
@@ -40,19 +41,34 @@ export default function NavBar() {
                     color: 'var(--text-primary)'
                 }}
             >
-                🥗 {capitalizedName}'s Food Log 
+                🥗  Chomp Tracker Dashboard
+                {/* 🥗 {capitalizedName}'s Food Log  */}
             </Link>
+
+            {/* Welcome message */}
+            <span style={{
+                // display: 'flex', 
+                // alignItems: 'center',
+                flex: 1,
+                textAlign: 'center',
+                fontSize: '13px',
+                color: 'var(--text-muted)',
+            }}>
+                Hey, {capitalizedName}!
+            </span>
 
             {/* Right - nav actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
 
                 {/* Welcome message */}
-                <span style={{
+                {/* <span style={{
+                    display: 'flex', 
+                    alignItems: 'center',
                     fontSize: '13px',
                     color: 'var(--text-muted)',
                 }}>
                     Hey, {capitalizedName}!
-                </span>
+                </span> */}
                 {/* Goals link */}
                 <Link
                 to="/goals"

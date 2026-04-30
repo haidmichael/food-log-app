@@ -12,8 +12,11 @@ export const getDailySummary = async (req, res) => {
             }), 
             prisma.foodLog.findMany({
                 where: {
-                    userId, 
-                    date: new Date(date) 
+                    userId,
+                    date: {
+                        gte: new Date(date + 'T00:00:00.000Z'),
+                        lte: new Date(date + 'T23:59:59.999Z')
+                    }
                 },
                 orderBy: {
                     createdAt: 'asc'
@@ -21,8 +24,11 @@ export const getDailySummary = async (req, res) => {
             }), 
             prisma.waterLog.findMany({
                 where: {
-                    userId, 
-                    date: new Date(date) 
+                    userId,
+                    date: {
+                        gte: new Date(date + 'T00:00:00.000Z'),
+                        lte: new Date(date + 'T23:59:59.999Z')
+                    }
                 },
                 orderBy: {
                     createdAt: 'asc'

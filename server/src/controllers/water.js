@@ -6,8 +6,11 @@ export const getWaterLog = async (req, res) => {
 
         const entries = await prisma.waterLog.findMany({
             where: {
-                userId: req.user.userId, 
-                date: new Date(date) 
+                userId: req.user.userId,
+                date: {
+                    gte: new Date(date + 'T00:00:00.000Z'),
+                    lte: new Date(date + 'T23:59:59.999Z')
+                }
             }
         })
 
@@ -33,7 +36,7 @@ export const addWaterEntry = async (req, res) => {
         const entry = await prisma.waterLog.create({
             data: {
                 userId: req.user.userId, 
-                date: new Date(date), 
+                date: new Date(date + 'T12:00:00.000Z'),
                 amount, 
                 unit: unit || 'oz'
             }
