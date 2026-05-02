@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser } from '../api/auth.js'
 import { useTheme } from '../context/ThemeContext.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function RegisterPage() {
   const [name, setName] = useState('')
@@ -13,6 +14,7 @@ export default function RegisterPage() {
   const [inviteCode, setInviteCode] = useState('')
 
   const { theme, toggleTheme } = useTheme()
+  const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -21,8 +23,9 @@ export default function RegisterPage() {
     setError(null)
 
     try {
-      await registerUser({ name, email, password, inviteCode })
-      navigate('/login')
+      const data = await registerUser({ name, email, password, inviteCode })
+      login(data.user, data.token)
+      navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed')
     } finally {
@@ -58,7 +61,7 @@ export default function RegisterPage() {
       </div>
 
       <h1 style={{ fontSize: '22px', marginBottom: '4px', color: 'var(--text-primary)' }}>
-        🥗 Food Log
+        🥗 Chomp Tracker
       </h1>
       <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '1.5rem' }}>
         Create your account

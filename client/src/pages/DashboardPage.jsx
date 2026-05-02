@@ -6,11 +6,15 @@ import MealSection from '../components/MealSection.jsx'
 import FoodSearch from '../components/FoodSearch.jsx'
 
 function getToday() {
-    return new Date().toISOString().split('T')[0]
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
 }
 
 function formatDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00')
+    const date = new Date(dateStr + 'T12:00:00')
     return date.toLocaleDateString('en-US', {
         weekday: 'short', 
         month: 'short', 
@@ -24,7 +28,7 @@ export default function DashboardPage() {
     const { data: summary, isLoading, isError } = useSummary(date) 
 
     const changeDate = (days) => {
-        const current = new Date(date + 'T00:00:00')
+        const current = new Date(date + 'T12:00:00')
         current.setDate(current.getDate() + days)
         setDate(current.toISOString().split('T')[0])
     }
