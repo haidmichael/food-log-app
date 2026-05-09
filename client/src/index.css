@@ -51,6 +51,16 @@ a {
   color: var(--text-primary);
 }
 
+.icon-label {
+  display: inline;
+}
+
+@media (max-width: 600px) {
+  .icon-label {
+    display: none;
+  }
+}
+
 @media (max-width: 600px ) {
   .hide-mobile {
     display: none !important;
