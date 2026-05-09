@@ -41,7 +41,7 @@ export default function NavBar() {
                     color: 'var(--text-primary)'
                 }}
             >
-                🥗  Chomp Tracker Dashboard
+                🥗   <span className='icon-label'>Chomp Tracker Dashboard</span>
                 {/* 🥗 {capitalizedName}'s Food Log  */}
             </Link>
 

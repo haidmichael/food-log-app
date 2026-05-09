@@ -420,6 +420,7 @@ export default function CreateSavedMealPage() {
                     type="number"
                     value={servingSize}
                     onChange={(e) => setServingSize(Number(e.target.value))}
+                    onFocus={(e) => e.target.select()}
                     min="0"
                     step="0.1"
                     style={{

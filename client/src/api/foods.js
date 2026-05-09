@@ -19,3 +19,13 @@ export const searchFoods = async (query) => {
     const response = await axiosClient.get(`/api/search?query=${query}`) 
     return response.data 
 }
+
+export const moveFoodEntry = async (id, meal) => {
+    const response = await axiosClient.patch(`/api/foods/${id}`, { meal })
+    return response.data
+}
+
+export const copyMealFromYesterday = async (date, meal) => {
+    const response = await axiosClient.post('/api/foods/copy', { date, meal })
+    return response.data
+}

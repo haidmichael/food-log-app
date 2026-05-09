@@ -11,3 +11,12 @@ export const foodEntrySchema = z.object({
     carbs: z.number().nonnegative('Carbs must be 0 or more'),
     fat: z.number().nonnegative('Fat must be 0 or more')
 })
+
+export const moveFoodSchema = z.object({
+    meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack'])
+})
+
+export const copyMealSchema = z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD format'),
+    meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack'])
+})
