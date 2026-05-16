@@ -18,6 +18,7 @@ model User {
   foodLogs  FoodLog[]
   waterLogs WaterLog[]
   savedMeal SavedMeal[]
+  passwordResetToken PasswordResetToken[]
 }
 
 model MacroGoal {
@@ -83,4 +84,15 @@ model SavedMealItem {
   fat         Float
 
   savedMeal SavedMeal @relation(fields: [savedMealId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id          String @id @default(uuid())
+  userId      String
+  token       String @unique
+  expiresAt   DateTime
+  used        Boolean @default(false)
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }

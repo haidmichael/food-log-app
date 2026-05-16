@@ -7,6 +7,8 @@ import DashboardPage from './pages/DashboardPage.jsx'
 import GoalsPage from './pages/GoalsPage.jsx'
 import SavedMealsPage from './pages/SavedMealsPage.jsx'
 import CreateSavedMealPage from './pages/CreateSavedMealPage.jsx'
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -31,6 +33,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <ProtectedLayout>
