@@ -29,3 +29,8 @@ export const copyMealFromYesterday = async (date, meal) => {
     const response = await axiosClient.post('/api/foods/copy', { date, meal })
     return response.data
 }
+
+export const parseFoodWithAI = async (description) => {
+    const response = await axiosClient.post('/api/ai/parse-food', { description })
+    return response.data
+}
