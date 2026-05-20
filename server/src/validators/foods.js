@@ -5,7 +5,11 @@ export const foodEntrySchema = z.object({
     meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack']),
     foodName: z.string().min(1, 'Food name is required').max(100),
     servingSize: z.number().positive('Serving size must be greater than 0'),
-    servingUnit: z.enum(['g', 'oz']),
+    servingUnit: z.enum([
+        'g', 'oz', 'cup', 'tbsp', 'tsp', 
+        'whole', 'piece', 'slice', 'bar', 
+        'links', 'link', 'serving', 'ml', 'l'
+    ]),
     calories: z.number().nonnegative('Calories must be 0 or more'),
     protein: z.number().nonnegative('Protein must be 0 or more'),
     carbs: z.number().nonnegative('Carbs must be 0 or more'),

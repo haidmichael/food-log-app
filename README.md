@@ -30,12 +30,12 @@ A full stack nutrition tracker built with Node/Express, PostgreSQL (Prisma), and
 7. Start the client: `npm run dev` in `/client`
 
 ## Known Audit Warnings
-Remaining `npm audit` warnings are isolated to Prisma's internal 
-dev tooling (`@prisma/dev`, `hono`, `lodash`). These packages are 
+Remaining 3 npm audit warnings are isolated to Prisma's internal 
+dev tooling (@prisma/dev, @hono/node-server). These packages are 
 not exposed in the application runtime and do not affect production 
 security. Fixing them requires a breaking Prisma downgrade.
-Prisma update available (7.5.0 → 7.7.0) -
-deferred until post-deployment to avaid mid-build breaking changes.
+Previously 17 vulnerabilities — reduced to 3 after npm audit fix 
+on feature/ai-food-logging branch.
 
 ## Known Data Limitations
 USDA FoodData Central branded food data may not always match

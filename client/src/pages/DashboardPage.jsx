@@ -4,6 +4,7 @@ import MacroCard from '../components/MacroCard.jsx'
 import WaterTracker from '../components/WaterTracker.jsx'
 import MealSection from '../components/MealSection.jsx'
 import FoodSearch from '../components/FoodSearch.jsx'
+import AIFoodLogger from '../components/AIFoodLogger.jsx'
 
 function getToday() {
     const now = new Date()
@@ -25,6 +26,7 @@ function formatDate(dateStr) {
 export default function DashboardPage() {
     const [date, setDate] = useState(getToday())
     const [activeMeal, setActiveMeal] = useState(null) 
+    const [showAILogger, setShowAILogger] = useState(false)
     const { data: summary, isLoading, isError } = useSummary(date) 
 
     const changeDate = (days) => {
@@ -195,6 +197,37 @@ export default function DashboardPage() {
                     entries={water?.entries || []}
                 />
             </div>
+
+            {/* AI Food Logger button */}
+            <button
+            onClick={() => setShowAILogger(true)}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 16px',
+                background: 'none',
+                color: 'var(--text-secondary)',
+                border: '5px solid var(--border)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '13px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                marginBottom: '12px',
+                width: '100%',
+                justifyContent: 'center'
+            }}
+            >
+            🤖 Log with ChompAI — just describe what you ate
+            </button>
+
+            {/* AI Logger Modal */}
+            {showAILogger && (
+            <AIFoodLogger
+                date={date}
+                onClose={() => setShowAILogger(false)}
+            />
+            )}
 
             {/* Food log */}
             {/* Meal Section */}
