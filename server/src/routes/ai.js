@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 import { parseFoodDescription } from '../controllers/ai.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { validate } from '../middleware/validate.js'
@@ -12,7 +12,7 @@ const parseFoodSchema = z.object({
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 min
   max: 10,             // max 10 AI requests per minute per user
-  keyGenerator: (req) => req.user?.userId || req.ip,
+  keyGenerator: (req) => req.user?.userId || ipKeyGenerator(req),
   message: { error: 'Too many AI requests, please slow down' }
 })
 

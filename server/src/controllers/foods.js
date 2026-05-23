@@ -79,31 +79,35 @@ export const deleteFoodEntry = async (req, res) => {
     }
 }
 
-export const moveFoodEntry = async (req, res) => {
-    try {
-        const { id } = req.params
-        const { meal } = req.body
+export const updateFoodEntry = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { meal, foodName, servingSize, servingUnit, calories, protein, carbs, fat } = req.body
 
-        const entry = await prisma.foodLog.findUnique({ where: { id } })
+    const entry = await prisma.foodLog.findUnique({ where: { id } })
 
-        if (!entry) {
-            return res.status(404).json({ error: 'Entry not found' })
-        }
+    if (!entry) return res.status(404).json({ error: 'Entry not found' })
+    if (entry.userId !== req.user.userId) return res.status(403).json({ error: 'Not authorized' })
 
-        if (entry.userId !== req.user.userId) {
-            return res.status(403).json({ error: 'Not authorized' })
-        }
+    const updated = await prisma.foodLog.update({
+      where: { id },
+      data: {
+        ...(meal && { meal }),
+        ...(foodName && { foodName }),
+        ...(servingSize !== undefined && { servingSize: Number(servingSize) }),
+        ...(servingUnit && { servingUnit }),
+        ...(calories !== undefined && { calories: Number(calories) }),
+        ...(protein !== undefined && { protein: Number(protein) }),
+        ...(carbs !== undefined && { carbs: Number(carbs) }),
+        ...(fat !== undefined && { fat: Number(fat) })
+      }
+    })
 
-        const updated = await prisma.foodLog.update({
-            where: { id }, 
-            data: { meal }
-        })
-
-        res.json({ message: 'Food moved', entry: updated })
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: 'Failed to move food entry' })
-    }
+    res.json({ message: 'Food updated', entry: updated })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to update food entry' })
+  }
 }
 
 export const copyMealFromYesterday = async (req, res) => {
