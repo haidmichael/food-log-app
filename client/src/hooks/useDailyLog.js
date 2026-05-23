@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query' 
-import { getFoodLog, addFoodEntry, deleteFoodEntry, moveFoodEntry, copyMealFromYesterday } from '../api/foods.js' 
+import { getFoodLog, addFoodEntry, deleteFoodEntry, updateFoodEntry, copyMealFromYesterday } from '../api/foods.js' 
 
 export function useFoodLog(date) {
     return useQuery({
@@ -35,10 +35,10 @@ export function useDeleteFood(date) {
   })
 }
 
-export function useMoveFood(date) {
+export function useUpdateFood(date) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, meal }) => moveFoodEntry(id, meal),
+    mutationFn: ({ id, ...data }) => updateFoodEntry(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['summary', date] })
       queryClient.refetchQueries({ queryKey: ['summary', date] })

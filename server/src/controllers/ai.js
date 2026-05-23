@@ -101,7 +101,7 @@ export const parseFoodDescription = async (req, res) => {
         res.json({ foods: foodEntries })
 
     } catch (err) {
-        console.error('AI parse error:', err)
-        res.status(500).json({ error: 'AI service unavailable. Please try agian.' })
+        console.error('AI parse error:', err.message)
+        res.status(500).json({ error: 'AI service unavailable. Please try again.' })
     }
 }

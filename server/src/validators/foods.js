@@ -16,8 +16,19 @@ export const foodEntrySchema = z.object({
     fat: z.number().nonnegative('Fat must be 0 or more')
 })
 
-export const moveFoodSchema = z.object({
-    meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack'])
+export const updateFoodSchema = z.object({
+  meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack']).optional(),
+  foodName: z.string().min(1).max(100).optional(),
+  servingSize: z.number().positive().optional(),
+  servingUnit: z.enum([
+    'g', 'oz', 'cup', 'tbsp', 'tsp',
+    'whole', 'piece', 'slice', 'bar',
+    'links', 'link', 'serving', 'ml', 'l'
+  ]).optional(),
+  calories: z.number().nonnegative().optional(),
+  protein: z.number().nonnegative().optional(),
+  carbs: z.number().nonnegative().optional(),
+  fat: z.number().nonnegative().optional()
 })
 
 export const copyMealSchema = z.object({

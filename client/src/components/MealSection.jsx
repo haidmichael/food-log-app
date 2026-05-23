@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDeleteFood, useMoveFood, useCopyMeal } from '../hooks/useDailyLog.js'
+import { useDeleteFood, useCopyMeal, useUpdateFood } from '../hooks/useDailyLog.js'
 
 const mealEmojis = {
   breakfast: '🌅',
@@ -19,18 +19,20 @@ const meals = ['breakfast', 'lunch', 'dinner', 'snack']
 
 export default function MealSection({ meal, entries = [], totals, date, onAddClick }) {
   const deleteFood = useDeleteFood(date)
-  const moveFood = useMoveFood(date)
+  const updateFood = useUpdateFood(date)
   const copyMeal = useCopyMeal(date)
 
   const [movingEntry, setMovingEntry] = useState(null)
   const [showCopyConfirm, setShowCopyConfirm] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [copyError, setCopyError] = useState(false)
+  const [editingEntry, setEditingEntry] = useState(null)
+  const [editValues, setEditValues] = useState({})
 
   const isEmpty = entries.length === 0
 
   const handleMove = (id, newMeal) => {
-    moveFood.mutate({ id, meal: newMeal })
+    updateFood.mutate({ id, meal: newMeal })
     setMovingEntry(null)
   }
 
@@ -48,6 +50,39 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
       }
     })
   }
+
+  const handleEditStart = (entry) => {
+  setEditingEntry(entry.id)
+  setEditValues({
+    foodName:    entry.foodName,
+    servingSize: entry.servingSize,
+    servingUnit: entry.servingUnit,
+    calories:    entry.calories,
+    protein:     entry.protein,
+    carbs:       entry.carbs,
+    fat:         entry.fat
+  })
+}
+
+const handleEditSave = (id) => {
+  updateFood.mutate({
+    id,
+    foodName:    editValues.foodName,
+    servingSize: Number(editValues.servingSize),
+    servingUnit: editValues.servingUnit,
+    calories:    Number(editValues.calories),
+    protein:     Number(editValues.protein),
+    carbs:       Number(editValues.carbs),
+    fat:         Number(editValues.fat)
+  }, {
+    onSuccess: () => setEditingEntry(null)
+  })
+}
+
+const handleEditCancel = () => {
+  setEditingEntry(null)
+  setEditValues({})
+}
 
   return (
     <div style={{
@@ -184,17 +219,17 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
 
       {/* Food entries */}
       {entries.map(entry => (
-        <div
-          key={entry.id}
-          style={{
-            borderBottom: '1px solid var(--border)',
-          }}
-        >
+      <div
+        key={entry.id}
+        style={{ borderBottom: '1px solid var(--border)' }}
+      >
+        {/* Normal view */}
+        {editingEntry !== entry.id && (
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 16px',
+            padding: '10px 16px'
           }}>
             <div>
               <div style={{
@@ -210,8 +245,23 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
               </div>
             </div>
 
-            {/* Action buttons */}
             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              {/* Edit button */}
+              <button
+                onClick={() => handleEditStart(entry)}
+                title="Edit entry"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: '13px',
+                  padding: '4px'
+                }}
+              >
+                ✏️ <span className="icon-label">Edit</span>
+              </button>
+
               {/* Move button */}
               <button
                 onClick={() => setMovingEntry(movingEntry === entry.id ? null : entry.id)}
@@ -225,7 +275,7 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
                   padding: '4px'
                 }}
               >
-                ↕ <span className='icon-label'>Move Food</span>
+                ↕ <span className="icon-label">Move Food</span>
               </button>
 
               {/* Delete button */}
@@ -245,62 +295,168 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
               </button>
             </div>
           </div>
+        )}
 
-          {/* Move meal picker — shows inline when ↕ clicked */}
-          {movingEntry === entry.id && (
+        {/* Edit view */}
+        {editingEntry === entry.id && (
+          <div style={{ padding: '12px 16px' }}>
+            {/* Food name */}
+            <input
+              value={editValues.foodName}
+              onChange={(e) => setEditValues(prev => ({ ...prev, foodName: e.target.value }))}
+              style={{
+                width: '100%',
+                padding: '8px',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--bg-input)',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                fontWeight: '500',
+                marginBottom: '10px',
+                boxSizing: 'border-box'
+              }}
+            />
+
+            {/* Macro fields */}
             <div style={{
-              padding: '8px 16px 12px',
-              background: 'var(--bg-secondary)',
-              borderTop: '1px solid var(--border)'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: '8px',
+              marginBottom: '10px'
             }}>
-              <div style={{
-                fontSize: '11px',
-                color: 'var(--text-muted)',
-                marginBottom: '8px'
-              }}>
-                Move to:
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {meals.filter(m => m !== meal).map(m => (
-                  <button
-                    key={m}
-                    onClick={() => handleMove(entry.id, m)}
-                    disabled={moveFood.isPending}
+              {[
+                { label: 'Serving', field: 'servingSize', color: 'var(--text-primary)' },
+                { label: 'Cal',     field: 'calories',    color: 'var(--error)' },
+                { label: 'Protein', field: 'protein',     color: 'var(--success)' },
+                { label: 'Carbs',   field: 'carbs',       color: 'var(--warning)' },
+                { label: 'Fat',     field: 'fat',         color: 'var(--purple)' }
+              ].map(macro => (
+                <div key={macro.field} style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontSize: '11px',
+                    color: 'var(--text-muted)',
+                    marginBottom: '4px'
+                  }}>
+                    {macro.label}
+                  </div>
+                  <input
+                    type="number"
+                    value={editValues[macro.field]}
+                    onChange={(e) => setEditValues(prev => ({
+                      ...prev,
+                      [macro.field]: e.target.value
+                    }))}
+                    onFocus={(e) => e.target.select()}
                     style={{
-                      padding: '5px 12px',
-                      background: 'var(--bg-primary)',
+                      width: '100%',
+                      padding: '6px 4px',
                       border: '1px solid var(--border)',
                       borderRadius: 'var(--radius-sm)',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      color: 'var(--text-primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
+                      background: 'var(--bg-input)',
+                      color: macro.color,
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      textAlign: 'center'
                     }}
-                  >
-                    {mealEmojis[m]} {m}
-                  </button>
-                ))}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Save / Cancel */}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={handleEditCancel}
+                style={{
+                  flex: 1,
+                  padding: '7px',
+                  background: 'none',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleEditSave(entry.id)}
+                disabled={updateFood.isPending}
+                style={{
+                  flex: 2,
+                  padding: '7px',
+                  background: 'var(--accent)',
+                  color: 'var(--accent-text)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                {updateFood.isPending ? 'Saving...' : '✓ Save changes'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Move meal picker */}
+        {movingEntry === entry.id && editingEntry !== entry.id && (
+          <div style={{
+            padding: '8px 16px 12px',
+            background: 'var(--bg-secondary)',
+            borderTop: '1px solid var(--border)'
+          }}>
+            <div style={{
+              fontSize: '11px',
+              color: 'var(--text-muted)',
+              marginBottom: '8px'
+            }}>
+              Move to:
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {meals.filter(m => m !== meal).map(m => (
                 <button
-                  onClick={() => setMovingEntry(null)}
+                  key={m}
+                  onClick={() => handleMove(entry.id, m)}
+                  disabled={updateFood.isPending}
                   style={{
                     padding: '5px 12px',
-                    background: 'none',
+                    background: 'var(--bg-primary)',
                     border: '1px solid var(--border)',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '12px',
                     cursor: 'pointer',
-                    color: 'var(--text-muted)'
+                    color: 'var(--text-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
                   }}
                 >
-                  Cancel
+                  {mealEmojis[m]} {m}
                 </button>
-              </div>
+              ))}
+              <button
+                onClick={() => setMovingEntry(null)}
+                style={{
+                  padding: '5px 12px',
+                  background: 'none',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)'
+                }}
+              >
+                Cancel
+              </button>
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        )}
+      </div>
+    ))}
 
       {/* Add food button */}
       <button
