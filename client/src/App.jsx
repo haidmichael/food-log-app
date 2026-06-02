@@ -9,6 +9,7 @@ import SavedMealsPage from './pages/SavedMealsPage.jsx'
 import CreateSavedMealPage from './pages/CreateSavedMealPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
+import SettingsPage from './pages/SettingsPage.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -64,6 +65,13 @@ export default function App() {
           </ProtectedRoute>
         } />
       <Route path='*' element={<Navigate to='/login' replace />}/>
+      <Route path='/settings' element={
+        <ProtectedRoute>
+          <ProtectedLayout>
+            <SettingsPage />
+          </ProtectedLayout>
+        </ProtectedRoute>
+      } />
     </Routes>
   )
 }
