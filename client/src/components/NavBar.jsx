@@ -128,6 +128,20 @@ export default function NavBar() {
                 >
                     Logout
                 </button>
+                {/* Settings link */}
+                <Link
+                    to="/settings"
+                    style={{
+                        fontSize: '13px',
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        padding: '6px 10px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border)'
+                    }}
+                >
+                    ⚙️ <span className="icon-label">Settings</span>
+                </Link>
             </div>
         </nav>
     )
