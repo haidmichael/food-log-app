@@ -28,6 +28,7 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
   const [copyError, setCopyError] = useState(false)
   const [editingEntry, setEditingEntry] = useState(null)
   const [editValues, setEditValues] = useState({})
+  const [editServings, setEditServings] = useState(1)
 
   const isEmpty = entries.length === 0
 
@@ -53,6 +54,7 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
 
   const handleEditStart = (entry) => {
   setEditingEntry(entry.id)
+  setEditServings(1)
   setEditValues({
     foodName:    entry.foodName,
     servingSize: entry.servingSize,
@@ -82,6 +84,19 @@ const handleEditSave = (id) => {
 const handleEditCancel = () => {
   setEditingEntry(null)
   setEditValues({})
+}
+
+const handleServingsChange = (newServings) => {
+  const ratio = newServings / editServings
+  setEditServings(newServings)
+  setEditValues(prev => ({
+    ...prev,
+    servingSize: Math.round(prev.servingSize * ratio * 10) / 10,
+    calories: Math.round(prev.calories * ratio),
+    protein: Math.round(prev.protein * ratio * 10) / 10,
+    carbs: Math.round(prev.carbs * ratio * 10) / 10,
+    fat: Math.round(prev.fat * ratio * 10) / 10,
+  }))
 }
 
   return (
@@ -317,6 +332,82 @@ const handleEditCancel = () => {
                 boxSizing: 'border-box'
               }}
             />
+
+            {/* Servings multiplier */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '10px'
+            }}>
+              <span style={{
+                fontSize: '12px',
+                color: 'var(--text-muted)',
+                whiteSpace: 'nowrap'
+              }}>
+                Servings:
+              </span>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                overflow: 'hidden'
+              }}>
+                <button
+                  onClick={() => handleServingsChange(Math.max(0.5, Math.round((editServings - 0.5) * 10) / 10))}
+                  style={{
+                    padding: '6px 10px',
+                    background: 'var(--bg-secondary)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--text-primary)',
+                    fontSize: '16px',
+                    fontWeight: '500'
+                  }}
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={editServings}
+                  onChange={(e) => handleServingsChange(Math.max(0.5, Number(e.target.value)))}
+                  onFocus={(e) => e.target.select()}
+                  min="0.5"
+                  step="0.5"
+                  style={{
+                    width: '50px',
+                    padding: '6px 4px',
+                    border: 'none',
+                    background: 'var(--bg-input)',
+                    color: 'var(--text-primary)',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    textAlign: 'center'
+                  }}
+                />
+                <button
+                  onClick={() => handleServingsChange(Math.round((editServings + 0.5) * 10) / 10)}
+                  style={{
+                    padding: '6px 10px',
+                    background: 'var(--bg-secondary)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--text-primary)',
+                    fontSize: '16px',
+                    fontWeight: '500'
+                  }}
+                >
+                  +
+                </button>
+              </div>
+              <span style={{
+                fontSize: '12px',
+                color: 'var(--text-muted)'
+              }}>
+                {editServings === 1 ? '1 serving' : `${editServings} servings`}
+              </span>
+            </div>
 
             {/* Macro fields */}
             <div style={{
