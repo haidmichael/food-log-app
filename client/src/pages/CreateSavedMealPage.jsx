@@ -5,10 +5,15 @@ import { searchFoods } from '../api/foods.js'
 
 const OZ_TO_G = 28.3495
 
-function calculateMacros(food, userServingSize, userServingUnit) {
-  const userGrams = userServingUnit === 'oz' ? userServingSize * OZ_TO_G : userServingSize
-  const baseGrams = food.servingSize || 100
-  const ratio = userGrams / baseGrams
+function calculateMacros(food, userServingSize, userServingUnit, servings = 1) {
+    const userGrams = userServingUnit === 'oz' ? userServingSize * OZ_TO_G : userServingSize
+
+//   const baseGrams = food.servingSize || 100
+    const baseGrams = food.servingSize === 'oz' 
+    ? (food.servingSize || 100) * OZ_TO_G
+    : (food.servingSize || 100)
+
+    const ratio = (userGrams / baseGrams) * servings
 
     return {
         calories: Math.round(food.calories * ratio),
@@ -32,6 +37,7 @@ export default function CreateSavedMealPage() {
     const [searching, setSearching] = useState(false)
     const [selectedFood, setSelectedFood] = useState(null)
     const [servingSize, setServingSize] = useState(100)
+    const [servings, setServings] = useState(1)
     const [servingUnit, setServingUnit] = useState(
         () => localStorage.getItem('preferredUnit') || 'g'
     )
@@ -64,6 +70,7 @@ export default function CreateSavedMealPage() {
 
     const handleSelectFood = (food) => {
         setSelectedFood(food)
+        setServings(1)
         // Default to the foods actual serving size
         if (servingUnit === 'oz') {
             setServingSize(Math.round((food.servingSize / OZ_TO_G) * 10) / 10)
@@ -76,14 +83,15 @@ export default function CreateSavedMealPage() {
 
     const handleAddItem = () => {
         if (!selectedFood) return 
-        const macros = calculateMacros(selectedFood, servingSize, servingUnit)
+        const macros = calculateMacros(selectedFood, servingSize, servingUnit, servings)
         setItems(prev => [...prev, {
             foodName: selectedFood.name,
-            servingSize, 
+            servingSize: servingSize * servings, 
             servingUnit,
             ...macros
         }])
         setSelectedFood(null)
+        setServings(1)
         servingSize(100)
     }
 
@@ -99,7 +107,7 @@ export default function CreateSavedMealPage() {
     }
 
     const preview = selectedFood  && servingSize > 0
-        ? calculateMacros(selectedFood, servingSize, servingUnit) : null
+        ? calculateMacros(selectedFood, servingSize, servingUnit, servings) : null
 
     const totalMacros = items.reduce((totals, item) => ({
         calories: totals.calories + item.calories,
@@ -458,10 +466,86 @@ export default function CreateSavedMealPage() {
                             : 'var(--text-secondary)'
                         }}
                         >
-                        {unit}
+                            {unit}
                         </button>
                     ))}
                     </div>
+                </div>
+                
+                {/* Servings input */}
+                <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginTop: '8px'
+                }}>
+                <span style={{
+                    fontSize: '12px',
+                    color: 'var(--text-muted)',
+                    whiteSpace: 'nowrap'
+                }}>
+                    Servings:
+                </span>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-sm)',
+                    overflow: 'hidden'
+                }}>
+                    <button
+                    onClick={() => setServings(prev => Math.max(0.5, Math.round((prev - 0.5) * 10) / 10))}
+                    style={{
+                        padding: '8px 12px',
+                        background: 'var(--bg-secondary)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'var(--text-primary)',
+                        fontSize: '16px',
+                        fontWeight: '500'
+                    }}
+                    >
+                    −
+                    </button>
+                    <input
+                    type="number"
+                    value={servings}
+                    onChange={(e) => setServings(Math.max(0.5, Number(e.target.value)))}
+                    onFocus={(e) => e.target.select()}
+                    min="0.5"
+                    step="0.5"
+                    style={{
+                        width: '50px',
+                        padding: '8px 4px',
+                        border: 'none',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        textAlign: 'center'
+                    }}
+                    />
+                    <button
+                    onClick={() => setServings(prev => Math.round((prev + 0.5) * 10) / 10)}
+                    style={{
+                        padding: '8px 12px',
+                        background: 'var(--bg-secondary)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'var(--text-primary)',
+                        fontSize: '16px',
+                        fontWeight: '500'
+                    }}
+                    >
+                    +
+                    </button>
+                </div>
+                <span style={{
+                    fontSize: '12px',
+                    color: 'var(--text-muted)'
+                }}>
+                    {servings === 1 ? '1 serving' : `${servings} servings`}
+                </span>
                 </div>
 
                 {/* Serving Hints */}
