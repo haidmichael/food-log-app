@@ -6,7 +6,11 @@ export const createSavedMealSchema = z.object({
     items: z.array(z.object({
         foodName: z.string().min(1, 'Food name is required'),
         servingSize: z.number().positive('Serving size must be grater than 0'),
-        servingUnit: z.enum(['g', 'oz']),
+        servingUnit: z.enum([
+            'g', 'oz', 'cup', 'tbsp', 'tsp',
+            'whole', 'piece', 'slice', 'bar',
+            'links', 'link', 'serving', 'ml', 'l'
+        ]),
         calories: z.number().nonnegative(),
         protein: z.number().nonnegative(),
         carbs: z.number().nonnegative(),
