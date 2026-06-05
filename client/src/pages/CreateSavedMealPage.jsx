@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react' 
 import { useNavigate } from 'react-router-dom' 
 import { useCreateSavedMeal } from '../hooks/useSavedMeals.js'
-import { searchFoods } from '../api/foods.js' 
+import { parseFoodWithAI, searchFoods } from '../api/foods.js'
+import FoodReviewCard from '../components/FoodReviewCard.jsx'
 
 const OZ_TO_G = 28.3495
 
@@ -41,6 +42,12 @@ export default function CreateSavedMealPage() {
     const [servingUnit, setServingUnit] = useState(
         () => localStorage.getItem('preferredUnit') || 'g'
     )
+
+    // ***** AI State *****
+    const [aiDescription, setAiDescription] = useState('')
+    const [aiLoading, setAiLoading] = useState(false)
+    const [aiParsed, setAiParsed] = useState([])
+    const [aiError, setAiError] = useState(null)
 
     useEffect(() => {
         if (query.length < 2) return setResults([])
@@ -115,6 +122,51 @@ export default function CreateSavedMealPage() {
         carbs: totals.carbs + item.carbs,
         fat: totals.fat + item.fat
     }), { calories: 0, protein: 0, carbs: 0, fat: 0 })
+
+    // ***** AI Parse Functions *****
+    const handleAIParse = async () => {
+        if (!aiDescription.trim()) return
+        setAiLoading(true)
+        setAiError(null)
+        setAiParsed([])
+        try {
+            const data = await parseFoodWithAI(aiDescription)
+            setAiParsed(data.foods.map((food, i) => ({
+                ...food,
+                tempId: i
+            })))
+        } catch (err) {
+            setAiError(err.response?.data?.error || 'Failed to parse food. Try again')
+        } finally {
+            setAiLoading(false)
+        }
+    }
+
+    const handleAIUpdate = (tempId, field, value) => {
+        setAiParsed(prev => prev.map(food =>
+            food.tempId === tempId ? { ...food, [field]: value } : food
+        ))
+    }
+
+    const handleAIRemove = (tempId) => {
+        setAiParsed(prev => prev.filter(food => food.tempId !== tempId))
+    }
+
+    const handleAIConfirm = () => {
+        aiParsed.forEach(food => {
+            setItems(prev => [...prev, {
+                foodName: food.foodName, 
+                servingSize: Number(food.servingSize),
+                servingUnit: food.servingUnit,
+                calories: Number(food.calories),
+                protein: Number(food.protein),
+                carbs: Number(food.carbs),
+                fat: Number(food.fat)
+            }])
+        })
+        setAiParsed([])
+        setAiDescription('')
+    }
 
     return (
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
@@ -285,6 +337,149 @@ export default function CreateSavedMealPage() {
             ))}
             </div>
         )}
+
+        {/* ChompAI Section */}
+        <div style={{
+            background: 'var(--bg-primary)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-md)',
+            overflow: 'hidden',
+            marginBottom: '16px'
+        }}>
+            <div style={{
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--border)',
+                background: 'var(--bg-secondary)',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: 'var(--text-primary)'
+            }}>
+                🤖 Add with ChompAI
+            </div>
+
+            <div style={{ padding: '16px' }}>
+                {/* Error */}
+                {aiError && (
+                <div style={{
+                    padding: '10px 12px',
+                    background: 'rgba(226,75,74,0.1)',
+                    border: '1px solid var(--error)',
+                    borderRadius: 'var(--radius-sm)',
+                    color: 'var(--error)',
+                    fontSize: '13px',
+                    marginBottom: '12px'
+                }}>
+                    {aiError}
+                </div>
+                )}
+
+                {/* Input */}
+                {aiParsed.length === 0 && (
+                <>
+                    <textarea
+                    value={aiDescription}
+                    onChange={(e) => setAiDescription(e.target.value)}
+                    placeholder="e.g. 2 scrambled eggs and 2 strips of bacon"
+                    rows={3}
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-sm)',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        fontSize: '14px',
+                        resize: 'vertical',
+                        boxSizing: 'border-box',
+                        marginBottom: '10px',
+                        fontFamily: 'inherit'
+                    }}
+                    />
+                    <button
+                    onClick={handleAIParse}
+                    disabled={aiLoading || aiDescription.trim().length < 2}
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        background: aiDescription.trim().length < 2
+                        ? 'var(--bg-secondary)'
+                        : 'var(--accent)',
+                        color: aiDescription.trim().length < 2
+                        ? 'var(--text-muted)'
+                        : 'var(--accent-text)',
+                        border: 'none',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        cursor: aiDescription.trim().length < 2 ? 'not-allowed' : 'pointer'
+                    }}
+                    >
+                    {aiLoading ? '🤖 Searching...' : '🤖 Search with ChompAI'}
+                    </button>
+                </>
+                )}
+
+                {/* Review cards */}
+                {aiParsed.length > 0 && (
+                <div>
+                    <div style={{
+                    fontSize: '12px',
+                    color: 'var(--text-muted)',
+                    marginBottom: '10px'
+                    }}>
+                    Review and edit before adding to meal:
+                    </div>
+
+                    {aiParsed.map(food => (
+                    <FoodReviewCard
+                        key={food.tempId}
+                        food={food}
+                        onUpdate={(field, value) => handleAIUpdate(food.tempId, field, value)}
+                        onRemove={() => handleAIRemove(food.tempId)}
+                    />
+                    ))}
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                    <button
+                        onClick={() => {
+                        setAiParsed([])
+                        setAiDescription('')
+                        }}
+                        style={{
+                        flex: 1,
+                        padding: '9px',
+                        background: 'none',
+                        border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        color: 'var(--text-secondary)'
+                        }}
+                    >
+                        ← Try again
+                    </button>
+                    <button
+                        onClick={handleAIConfirm}
+                        disabled={aiParsed.length === 0}
+                        style={{
+                        flex: 2,
+                        padding: '9px',
+                        background: 'var(--accent)',
+                        color: 'var(--accent-text)',
+                        border: 'none',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: 'pointer'
+                        }}
+                    >
+                        ✓ Add {aiParsed.length} item{aiParsed.length !== 1 ? 's' : ''} to meal
+                    </button>
+                    </div>
+                </div>
+                )}
+            </div>
+        </div>
 
         {/* Food search */}
         <div style={{
