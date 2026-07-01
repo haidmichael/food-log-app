@@ -35,3 +35,10 @@ export const copyMealSchema = z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD format'),
     meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack'])
 })
+
+export const saveAsMealSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD format'),
+  meal: z.enum(['breakfast', 'lunch', 'dinner', 'snack']),
+  name: z.string().min(1, 'Meal name is required').max(100),
+  description: z.string().max(200).optional()
+})

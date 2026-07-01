@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getSavedMeals, createSavedMeal, deleteSavedMeal, logSavedMeal } from '../api/savedMeals.js'
+import { getSavedMeals, createSavedMeal, saveLoggedMealAsTemplate, deleteSavedMeal, logSavedMeal } from '../api/savedMeals.js'
 
 export function useSavedMeals() {
     return useQuery({
@@ -14,6 +14,16 @@ export function useCreateSavedMeal() {
         mutationFn: createSavedMeal,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['savedMeals']})
+        }
+    })
+}
+
+export function useSaveAsMeal() {
+    const queryClient = useQueryClient()
+    return useMutation ({
+        mutationFn: saveLoggedMealAsTemplate,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['saveMeals']})
         }
     })
 }

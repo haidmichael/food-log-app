@@ -10,6 +10,11 @@ export const createSavedMeal = async (data) => {
     return response.data
 }
 
+export const saveLoggedMealAsTemplate = async ({ date, meal, name, description }) => {
+    const response = await axiosClient.post('/api/foods/save-as-meal', {date, meal, name, description })
+    return response.data
+}
+
 export const deleteSavedMeal = async (id) => {
     const response = await axiosClient.delete(`/api/saved-meals/${id}`)
     return response.data
