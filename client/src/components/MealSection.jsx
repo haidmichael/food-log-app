@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDeleteFood, useCopyMeal, useUpdateFood } from '../hooks/useDailyLog.js'
+import { useSaveAsMeal } from '../hooks/useSavedMeals.js'
 
 const mealEmojis = {
   breakfast: '🌅',
@@ -21,6 +22,7 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
   const deleteFood = useDeleteFood(date)
   const updateFood = useUpdateFood(date)
   const copyMeal = useCopyMeal(date)
+  const saveAsMeal = useSaveAsMeal()
 
   const [movingEntry, setMovingEntry] = useState(null)
   const [showCopyConfirm, setShowCopyConfirm] = useState(false)
@@ -29,6 +31,11 @@ export default function MealSection({ meal, entries = [], totals, date, onAddCli
   const [editingEntry, setEditingEntry] = useState(null)
   const [editValues, setEditValues] = useState({})
   const [editServings, setEditServings] = useState(1)
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [saveName, setSaveName] = useState('')
+  const [saveDescription, setSaveDescription] = useState('')
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
   const isEmpty = entries.length === 0
 
@@ -97,6 +104,28 @@ const handleServingsChange = (newServings) => {
     carbs: Math.round(prev.carbs * ratio * 10) / 10,
     fat: Math.round(prev.fat * ratio * 10) / 10,
   }))
+}
+
+const handleSaveAsMeal = () => {
+  if (!saveName.trim()) return 
+  saveAsMeal.mutate({
+    date,
+    meal,
+    name: saveName,
+    description: saveDescription
+  }, {
+    onSuccess: () => {
+      setShowSaveModal(false)
+      setSaveName('')
+      setSaveDescription('')
+      setSaveSuccess(true)
+      setTimeout(() => setSaveSuccess(false), 2000)
+    },
+    onError: (() => {
+      setSaveError(true)
+      setTimeout(() => setSaveError(false), 2000)
+    })
+  })
 }
 
   return (
@@ -182,7 +211,44 @@ const handleServingsChange = (newServings) => {
             }
           </button>
         </div>
+
+        {/* Save as template button */}
+        {!isEmpty && (
+          <button
+            onClick={() => {
+              setSaveName(`My ${meal.charAt(0).toUpperCase() + meal.slice(1)}`)
+              setShowSaveModal(true)
+            }}
+            title="Save as meal template"
+            style={{
+              background: saveSuccess
+                ? 'var(--success)'
+                : saveError
+                  ? 'rgba(226,75,74,0.1)'
+                  : 'none',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '4px 8px',
+              cursor: 'pointer',
+              color: saveSuccess
+                ? 'white'
+                : saveError
+                  ? 'var(--error)'
+                  : 'var(--text-muted)',
+              fontSize: '12px',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            {saveSuccess
+              ? '✓ Saved!'
+              : saveError
+                ? '✗ Failed'
+                : <>💾 <span className="icon-label">Save as Meal</span></>
+            }
+          </button>
+        )}
       </div>
+
 
       {/* Copy from yesterday confirmation */}
       {showCopyConfirm && (
@@ -227,6 +293,104 @@ const handleServingsChange = (newServings) => {
               }}
             >
               Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Save as template modal */}
+      {showSaveModal && (
+        <div style={{
+          padding: '12px 16px',
+          background: 'var(--bg-secondary)',
+          borderBottom: '1px solid var(--border)'
+        }}>
+          <div style={{
+            fontSize: '13px',
+            color: 'var(--text-primary)',
+            fontWeight: '500',
+            marginBottom: '10px'
+          }}>
+            Save {meal} as a meal template
+          </div>
+
+          <input
+            type="text"
+            value={saveName}
+            onChange={(e) => setSaveName(e.target.value)}
+            placeholder="Meal's name"
+            onFocus={(e) => e.target.select()}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--bg-input)',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              boxSizing: 'border-box',
+              marginBottom: '8px'
+            }}
+          />
+
+          <input
+            type="text"
+            value={saveDescription}
+            onChange={(e) => setSaveDescription(e.target.value)}
+            placeholder="Description (optional)"
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--bg-input)',
+              color: 'var(--text-primary)',
+              fontSize: '13px',
+              boxSizing: 'border-box',
+              marginBottom: '10px'
+            }}
+          />
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => {
+                setShowSaveModal(false)
+                setSaveName('')
+                setSaveDescription('')
+              }}
+              style={{
+                flex: 1,
+                padding: '7px',
+                background: 'none',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '12px',
+                cursor: 'pointer',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveAsMeal}
+              disabled={!saveName.trim() || saveAsMeal.isPending}
+              style={{
+                flex: 2,
+                padding: '7px',
+                background: !saveName.trim()
+                  ? 'var(--bg-secondary)'
+                  : 'var(--accent)',
+                color: !saveName.trim()
+                  ? 'var(--text-muted)'
+                  : 'var(--accent-text)',
+                border: 'none',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '12px',
+                fontWeight: '500',
+                cursor: !saveName.trim() ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {saveAsMeal.isPending ? 'Saving...' : '💾 Save template'}
             </button>
           </div>
         </div>

@@ -169,3 +169,56 @@ export const copyMealFromYesterday = async (req, res) => {
         res.status(500).json({ error: 'Failed to copy Meal' })
     }
 }
+
+export const saveAsMeal = async (req, res) => {
+    try {
+        const { date, meal, name, description } = req.body
+        const userId = req.user.userId
+
+        // ***** Get all food entries for this date and meal *****
+        const entries = await prisma.foodLog.findMany({
+            where: {
+                userId, 
+                meal,
+                date: {
+                    gte: new Date(date + 'T00:00:00.000Z'),
+                    lte: new Date(date + 'T23:59:59.999Z')
+                }
+            }
+        })
+
+        if (entries.length === 0) {
+            return res.status(404).json({ error: `No ${meal} entries found for this date` })
+        }
+
+        // ***** Create saved meal with those items *****
+        const savedMeal = await prisma.savedMeal.create({
+            data: {
+                userId,
+                name,
+                description: description || '',
+                items: {
+                    create: entries.map(entry => ({
+                        foodName: entry.foodName,
+                        servingSize: entry.servingSize,
+                        servingUnit: entry.servingUnit,
+                        calories: entry.calories,
+                        protein: entry.protein,
+                        carbs: entry.carbs,
+                        fat: entry.fat
+                    }))
+                }
+            },
+            include: { items: true }
+        })
+
+        res.status(201).json({
+            message: `${meal} saved as a meal template`,
+            savedMeal: JSON.parse(JSON.stringify(savedMeal))
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: 'Failed to save meal template' })
+    }
+}
