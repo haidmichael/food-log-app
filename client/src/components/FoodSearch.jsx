@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react' 
 import { searchFoods } from '../api/foods.js'
-import {useAddFood } from '../hooks/useDailyLog.js'
+import { useAddFood } from '../hooks/useDailyLog.js'
+import { searchCommunityFoods, incrementCommunityFoodUseCount } from '../api/communityFoods.js'
 
 const OZ_TO_G = 28.3495
 
@@ -43,8 +44,30 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
             const timeout = setTimeout(async () => {
                 setSearching(true) 
                 try {
-                    const data = await searchFoods(query) 
-                    setResults(data.foods) 
+                    const [communityData, usdaData] = await Promise.all([
+                        searchCommunityFoods(query),
+                        searchFoods(query)
+                    ])
+
+                    const communityResults = (communityData.foods || []).map(food => ({
+                        ...food,
+                        isCommunity: true,
+                        fdcId: food.id,
+                        name: food.name,
+                        brand: food.brand || null
+                    }))
+
+                    const usdaResults = (usdaData.foods || []).map(food => ({
+                        ...food,
+                        isCommunity: false
+                    }))
+
+                    const combined = [
+                        ...(Array.isArray(communityResults) ? communityResults : []),
+                        ...(Array.isArray(usdaResults) ? usdaResults : [])
+                    ]
+
+                    setResults(combined) 
                 } catch (err) {
                     console.log(err) 
                 } finally {
@@ -71,7 +94,7 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
         setServings(1)
         // Default to the foods actual serving size
         if (servingUnit === 'oz') {
-            setServingSize(Math.round((food.servingSize / OZ_TO_G) * 10) / 10)
+            setServingSize(Math.round(((food.servingSize || 100) / OZ_TO_G) * 10) / 10)
         } else {
             setServingSize(food.servingSize || 100)
         }
@@ -82,6 +105,10 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
     const handleConfirm = () => {
         if(!selectedFood) return
         const macros = calculateMacros(selectedFood, servingSize, servingUnit, servings)
+
+        if (selectedFood.isCommunity) {
+            incrementCommunityFoodUseCount(selectedFood.id).catch(console.error)
+        }
 
         addFood.mutate({
             date,
@@ -486,62 +513,78 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
                         </div>
                     )}
 
-                    {results.map(food => (
-                        <div 
-                            key={food.fdcId}
-                            style={{
-                                padding: '12px 16px',
-                                borderBottom: '1px solid var(--border)',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                background: selectedFood?.fdcId === food.fdcId
-                                ? 'var(--bg-secondary)'
-                                : 'transparent'
-                            }}
-                        >
-                            <div>
-                                <div style={{
-                                    fontSize: '13px', 
-                                    fontWeight: '500', 
-                                    color: 'var(--text-primary)', 
-                                    marginBottom: '2px'
-                                }}>
-                                    {food.name}
-                                </div>
-                                {food.brand && (
-                                    <div style={{
-                                        fontSize: '11px', 
-                                        color: 'var(--text-muted)'
-                                    }}>
-                                        {food.brand}
-                                    </div>
-                                )}
-                                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                                    {food.calories} cal · {food.protein}g protein · {food.carbs}g carbs · {food.fat}g fat
-                                    <span style={{ marginLeft: '4px' }}>
-                                        {food.householdServing ? `per ${food.householdServing}` : 'per 100g'}
-                                    </span>
-                                </div>
+                    {Array.isArray(results) && results.map(food => (
+                    <div
+                        key={food.fdcId || food.id}
+                        style={{
+                        padding: '12px 16px',
+                        borderBottom: '1px solid var(--border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: selectedFood?.fdcId === (food.fdcId || food.id)
+                            ? 'var(--bg-secondary)'
+                            : 'transparent'
+                        }}
+                    >
+                        <div>
+                        <div style={{
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            color: 'var(--text-primary)',
+                            marginBottom: '2px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }}>
+                            {food.name}
+                            {food.isCommunity && (
+                            <span style={{
+                                fontSize: '10px',
+                                background: 'rgba(29,158,117,0.15)',
+                                color: 'var(--success)',
+                                padding: '1px 6px',
+                                borderRadius: '10px',
+                                fontWeight: '600'
+                            }}>
+                                ⭐ Community
+                            </span>
+                            )}
                         </div>
-                        <button 
-                            onClick={() => handleSelectFood(food)}
-                            style={{
+                        {food.brand && (
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                            {food.brand}
+                            </div>
+                        )}
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                            {food.calories} cal · {food.protein}g protein · {food.carbs}g carbs · {food.fat}g fat
+                            <span style={{ marginLeft: '4px' }}>
+                            {food.isCommunity
+                                ? `per ${food.servingSize}${food.servingUnit}`
+                                : food.householdServing
+                                ? `per ${food.householdServing}`
+                                : 'per 100g'
+                            }
+                            </span>
+                        </div>
+                        </div>
+                        <button
+                        onClick={() => handleSelectFood(food)}
+                        style={{
                             padding: '6px 12px',
-                            background: selectedFood?.fdcId === food.fdcId
-                                ? 'var(--bg-secondary)'
-                                : 'var(--accent)',
-                            color: selectedFood?.fdcId === food.fdcId
-                                ? 'var(--text-secondary)'
-                                : 'var(--accent-text)',
+                            background: selectedFood?.fdcId === (food.fdcId || food.id)
+                            ? 'var(--bg-secondary)'
+                            : 'var(--accent)',
+                            color: selectedFood?.fdcId === (food.fdcId || food.id)
+                            ? 'var(--text-secondary)'
+                            : 'var(--accent-text)',
                             border: '1px solid var(--border)',
                             borderRadius: 'var(--radius-sm)',
                             cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '500'
-                            }}
+                            fontSize: '12px'
+                        }}
                         >
-                            {selectedFood?.fdcId === food.fdcId ? 'Slected' : 'Select'}
+                        {selectedFood?.fdcId === (food.fdcId || food.id) ? 'Selected' : 'Select'}
                         </button>
                     </div>
                     ))}
