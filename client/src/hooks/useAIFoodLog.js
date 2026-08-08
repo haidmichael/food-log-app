@@ -37,31 +37,6 @@ export function useAIFoodLog(date, onSuccess) {
         setParsedFoods(prev => prev.filter(food => food.tempId !== tempId))
     }
 
-    // const confirmAll = async (meal) => {
-    //     setStep('confirming')
-    //     try {
-    //         await Promise.all(parsedFoods.map(food => 
-    //             addFoodEntry({
-    //                 date, 
-    //                 meal,
-    //                 foodName: food.foodName,
-    //                 servingSize: Number(food.servingSize),
-    //                 servingUnit: food.servingUnit,
-    //                 calories: Number(food.calories),
-    //                 protein: Number(food.protein),
-    //                 carbs: Number(food.carbs),
-    //                 fat: Number(food.fat)
-    //             })
-    //         ))
-    //         setStep('done')
-    //         onSuccess()
-    //         reset()
-    //     } catch (err) {
-    //         setError('Failed to log some foods. Please try again.')
-    //         setStep('review')
-    //     }
-    // }
-
     const confirmAll = async (meal) => {
         setStep('confirming')
         try {
