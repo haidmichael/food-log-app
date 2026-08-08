@@ -34,15 +34,15 @@ export default function SettingsPage() {
 
     setLoading(true)
     try {
-        await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/auth/change-password`,
-            { currentPassword, newPassword },
-            {
-                headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            }
-        )
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/change-password`,
+        { currentPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      )
       setSuccess(true)
       setCurrentPassword('')
       setNewPassword('')
@@ -57,25 +57,31 @@ export default function SettingsPage() {
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '1.5rem'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+        }}
+      >
         <div>
-          <h2 style={{
-            fontSize: '18px',
-            fontWeight: '600',
-            color: 'var(--text-primary)',
-            marginBottom: '4px'
-          }}>
+          <h2
+            style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: 'var(--text-primary)',
+              marginBottom: '4px',
+            }}
+          >
             Settings
           </h2>
-          <p style={{
-            fontSize: '13px',
-            color: 'var(--text-muted)'
-          }}>
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'var(--text-muted)',
+            }}
+          >
             {user?.email}
           </p>
         </div>
@@ -88,7 +94,7 @@ export default function SettingsPage() {
             padding: '6px 12px',
             cursor: 'pointer',
             color: 'var(--text-secondary)',
-            fontSize: '13px'
+            fontSize: '13px',
           }}
         >
           ← Back
@@ -96,50 +102,58 @@ export default function SettingsPage() {
       </div>
 
       {/* Change Password Card */}
-      <div style={{
-        background: 'var(--bg-primary)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          padding: '14px 16px',
-          borderBottom: '1px solid var(--border)',
-          background: 'var(--bg-secondary)',
-          fontSize: '13px',
-          fontWeight: '600',
-          color: 'var(--text-primary)'
-        }}>
+      <div
+        style={{
+          background: 'var(--bg-primary)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            padding: '14px 16px',
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--bg-secondary)',
+            fontSize: '13px',
+            fontWeight: '600',
+            color: 'var(--text-primary)',
+          }}
+        >
           Change Password
         </div>
 
         <div style={{ padding: '16px' }}>
           {/* Success message */}
           {success && (
-            <div style={{
-              padding: '12px',
-              background: 'rgba(29,158,117,0.1)',
-              border: '1px solid var(--success)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--success)',
-              fontSize: '13px',
-              marginBottom: '16px'
-            }}>
+            <div
+              style={{
+                padding: '12px',
+                background: 'rgba(29,158,117,0.1)',
+                border: '1px solid var(--success)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--success)',
+                fontSize: '13px',
+                marginBottom: '16px',
+              }}
+            >
               ✓ Password changed successfully!
             </div>
           )}
 
           {/* Error message */}
           {error && (
-            <div style={{
-              padding: '12px',
-              background: 'rgba(226,75,74,0.1)',
-              border: '1px solid var(--error)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--error)',
-              fontSize: '13px',
-              marginBottom: '16px'
-            }}>
+            <div
+              style={{
+                padding: '12px',
+                background: 'rgba(226,75,74,0.1)',
+                border: '1px solid var(--error)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--error)',
+                fontSize: '13px',
+                marginBottom: '16px',
+              }}
+            >
               {error}
             </div>
           )}
@@ -147,12 +161,14 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit}>
             {/* Current password */}
             <div style={{ marginBottom: '12px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '13px',
-                color: 'var(--text-secondary)',
-                marginBottom: '6px'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  marginBottom: '6px',
+                }}
+              >
                 Current Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -169,12 +185,12 @@ export default function SettingsPage() {
                     background: 'var(--bg-input)',
                     color: 'var(--text-primary)',
                     fontSize: '14px',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPasswords(prev => !prev)}
+                  onClick={() => setShowPasswords((prev) => !prev)}
                   style={{
                     position: 'absolute',
                     right: '10px',
@@ -184,7 +200,7 @@ export default function SettingsPage() {
                     border: 'none',
                     cursor: 'pointer',
                     fontSize: '16px',
-                    color: 'var(--text-muted)'
+                    color: 'var(--text-muted)',
                   }}
                 >
                   {showPasswords ? '🙈' : '🐵'}
@@ -194,12 +210,14 @@ export default function SettingsPage() {
 
             {/* New password */}
             <div style={{ marginBottom: '12px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '13px',
-                color: 'var(--text-secondary)',
-                marginBottom: '6px'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  marginBottom: '6px',
+                }}
+              >
                 New Password
               </label>
               <input
@@ -216,19 +234,21 @@ export default function SettingsPage() {
                   background: 'var(--bg-input)',
                   color: 'var(--text-primary)',
                   fontSize: '14px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
                 }}
               />
             </div>
 
             {/* Confirm new password */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '13px',
-                color: 'var(--text-secondary)',
-                marginBottom: '6px'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  marginBottom: '6px',
+                }}
+              >
                 Confirm New Password
               </label>
               <input
@@ -245,7 +265,7 @@ export default function SettingsPage() {
                   background: 'var(--bg-input)',
                   color: 'var(--text-primary)',
                   fontSize: '14px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
                 }}
               />
             </div>
@@ -263,12 +283,115 @@ export default function SettingsPage() {
                 fontSize: '14px',
                 fontWeight: '500',
                 cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.7 : 1
+                opacity: loading ? 0.7 : 1,
               }}
             >
               {loading ? 'Changing...' : 'Change Password'}
             </button>
           </form>
+        </div>
+      </div>
+
+      {/* PWA Install hint */}
+      <div
+        style={{
+          background: 'var(--bg-primary)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+          overflow: 'hidden',
+          marginTop: '16px',
+        }}
+      >
+        <div
+          style={{
+            padding: '14px 16px',
+            borderBottom: '1px solid var(--border)',
+            background: 'var(--bg-secondary)',
+            fontSize: '13px',
+            fontWeight: '600',
+            color: 'var(--text-primary)',
+          }}
+        >
+          📱 Install Chomp Tracker
+        </div>
+        <div style={{ padding: '16px' }}>
+          <p
+            style={{
+              fontSize: '13px',
+              color: 'var(--text-muted)',
+              marginBottom: '12px',
+            }}
+          >
+            Add Chomp Tracker to your home screen for the best experience — no
+            App Store needed!
+          </p>
+          <div
+            style={{
+              background: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-md)',
+              padding: '12px',
+              marginBottom: '10px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                color: 'var(--text-primary)',
+                marginBottom: '6px',
+              }}
+            >
+              🍎 iPhone / iPad
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                color: 'var(--text-muted)',
+                lineHeight: '1.6',
+              }}
+            >
+              1. Open chomptracker.com in Safari
+              <br />
+              2. Tap the Share button (□↑) at the bottom
+              <br />
+              3. Scroll down and tap "Add to Home Screen"
+              <br />
+              4. Tap "Add" in the top right
+            </div>
+          </div>
+          <div
+            style={{
+              background: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-md)',
+              padding: '12px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                color: 'var(--text-primary)',
+                marginBottom: '6px',
+              }}
+            >
+              🤖 Android
+            </div>
+            <div
+              style={{
+                fontSize: '12px',
+                color: 'var(--text-muted)',
+                lineHeight: '1.6',
+              }}
+            >
+              1. Open chomptracker.com in Chrome
+              <br />
+              2. Tap the three dot menu (⋮) in the top right
+              <br />
+              3. Tap "Add to Home Screen" or "Install App"
+              <br />
+              4. Tap "Add" to confirm
+            </div>
+          </div>
         </div>
       </div>
     </div>
