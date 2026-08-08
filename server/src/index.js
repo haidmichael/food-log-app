@@ -10,6 +10,7 @@ import summaryRoutes from './routes/summary.js'
 import searchRoutes from './routes/search.js'
 import savedMealRoutes from './routes/savedMeals.js'
 import aiRoutes from './routes/ai.js'
+import communityFoodRoutes from './routes/communityFoods.js'
 
 dotenv.config() 
 
@@ -43,6 +44,7 @@ app.use('/api/summary', summaryRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/saved-meals', savedMealRoutes)
 app.use('/api/ai', aiRoutes)
+app.use('/api/community-foods', communityFoodRoutes)
 
 // Health check route
 app.get('/health', (req, res) => {

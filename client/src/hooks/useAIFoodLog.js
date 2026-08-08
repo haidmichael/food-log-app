@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { parseFoodWithAI } from '../api/foods.js'
 import { addFoodEntry } from "../api/foods.js"
+import { saveCommunityFood } from '../api/communityFoods.js'
 
 export function useAIFoodLog(date, onSuccess) {
     const [step, setStep] = useState('idle')
@@ -36,26 +37,67 @@ export function useAIFoodLog(date, onSuccess) {
         setParsedFoods(prev => prev.filter(food => food.tempId !== tempId))
     }
 
+    // const confirmAll = async (meal) => {
+    //     setStep('confirming')
+    //     try {
+    //         await Promise.all(parsedFoods.map(food => 
+    //             addFoodEntry({
+    //                 date, 
+    //                 meal,
+    //                 foodName: food.foodName,
+    //                 servingSize: Number(food.servingSize),
+    //                 servingUnit: food.servingUnit,
+    //                 calories: Number(food.calories),
+    //                 protein: Number(food.protein),
+    //                 carbs: Number(food.carbs),
+    //                 fat: Number(food.fat)
+    //             })
+    //         ))
+    //         setStep('done')
+    //         onSuccess()
+    //         reset()
+    //     } catch (err) {
+    //         setError('Failed to log some foods. Please try again.')
+    //         setStep('review')
+    //     }
+    // }
+
     const confirmAll = async (meal) => {
         setStep('confirming')
         try {
-            await Promise.all(parsedFoods.map(food => 
-                addFoodEntry({
-                    date, 
-                    meal,
-                    foodName: food.foodName,
-                    servingSize: Number(food.servingSize),
-                    servingUnit: food.servingUnit,
-                    calories: Number(food.calories),
-                    protein: Number(food.protein),
-                    carbs: Number(food.carbs),
-                    fat: Number(food.fat)
-                })
-            ))
+            await Promise.all(parsedFoods.map(async food => {
+            // Log to FoodLog
+            await addFoodEntry({
+                date,
+                meal,
+                foodName:    food.foodName,
+                servingSize: Number(food.servingSize),
+                servingUnit: food.servingUnit,
+                calories:    Number(food.calories),
+                protein:     Number(food.protein),
+                carbs:       Number(food.carbs),
+                fat:         Number(food.fat)
+            })
+
+            // Also save to community foods
+            await saveCommunityFood({
+                name:        food.foodName,
+                brand:       null,
+                servingSize: Number(food.servingSize),
+                servingUnit: food.servingUnit,
+                calories:    Number(food.calories),
+                protein:     Number(food.protein),
+                carbs:       Number(food.carbs),
+                fat:         Number(food.fat),
+                source:      'ai_verified'
+            }).catch(err => console.error('Community food save failed:', err))
+            }))
+
             setStep('done')
             onSuccess()
             reset()
         } catch (err) {
+            console.error('confrimAll error:', err)
             setError('Failed to log some foods. Please try again.')
             setStep('review')
         }
