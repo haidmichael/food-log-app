@@ -116,7 +116,7 @@ export const copyMealFromYesterday = async (req, res) => {
         const userId = req.user.userId
 
         // Calculate yesterday
-        const today = new Date(date + 'T12:00:00')
+        const today = new Date(date + 'T12:00:00.000Z')
         const yesterday = new Date(today)
         yesterday.setDate(yesterday.getDate() -1)
 
@@ -142,7 +142,7 @@ export const copyMealFromYesterday = async (req, res) => {
         }
 
         // Copy entries to today
-        const todayDate = new Date(date + 'T12:00:00')
+        const todayDate = new Date(date + 'T12:00:00.000Z')
 
         await prisma.foodLog.createMany({
             data: entries.map(entry => ({

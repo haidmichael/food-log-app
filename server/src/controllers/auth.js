@@ -132,7 +132,7 @@ export const forgotPassword = async (req, res) => {
         
     } catch (err) {
         console.error(err)
-        res.send(500).json({ message: 'Failed to process reqeust' })
+        res.status(500).json({ message: 'Failed to process request' })
     }
 }
 
@@ -173,7 +173,7 @@ export const resetPassword = async (req, res) => {
         
     } catch (err) {
         console.error(err)
-        res.send(500).json({ message: 'Failed to process request' })
+        res.status(500).json({ message: 'Failed to process request' })
     }
 }
 
