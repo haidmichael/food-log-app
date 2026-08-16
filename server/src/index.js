@@ -1,7 +1,12 @@
-import dotenv from 'dotenv' 
+import dotenv from 'dotenv'
+dotenv.config()
+
+import { validateEnv } from './config/validateEnv.js'
+validateEnv()
+
 import express from 'express' 
 import cors from 'cors' 
-import { rateLimit } from 'express-rate-limit' 
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit' 
 import authRoutes from './routes/auth.js' 
 import macroRoutes from './routes/macros.js' 
 import foodRoutes from './routes/foods.js'
@@ -33,7 +38,19 @@ const limiter = rateLimit({
     message: { error: 'Too many requests, please try again later.'}
 })
 
+// Strict Limiter for auth routes
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10, 
+    message: { error: 'Too many attempts, please try again in 15 minutes' },
+    keyGenerator: (req) => ipKeyGenerator(req)
+})
+
 app.use('/api/', limiter) 
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/register', authLimiter)
+app.use('/api/auth/forgot-password', authLimiter)
+app.use('/api/auth/reset-password', authLimiter)
 
 // Routes
 app.use('/api/auth', authRoutes)
