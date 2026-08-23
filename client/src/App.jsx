@@ -22,7 +22,7 @@ function ProtectedLayout({ children }) {
   return (
     <>
       <NavBar />
-      <main style={{ padding: '1.5rem', maxWidth: '680', margin: '0 auto' }}>
+      <main style={{ padding: '1.5rem', maxWidth: '680px', margin: '0 auto' }}>
         {children}
       </main>
     </>
