@@ -28,6 +28,7 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
     const [searching, setSearching] = useState(false)
+    const [searchWarning, setSearchWarning] = useState(null)
     const [selectedMeal, setSelectedMeal] = useState(defaultMeal)
     const [selectedFood, setSelectedFood] = useState(null)
     const [servingSize, setServingSize] = useState(100)
@@ -39,37 +40,68 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
     const addFood = useAddFood()
 
     useEffect(() => {
-        if (query.length < 2) return setResults([])
+        if (!searchWarning) return
+        const timeout = setTimeout(() => setSearchWarning(null), 4000)
+        return () => clearTimeout(timeout)
+    }, [searchWarning])
+
+    useEffect(() => {
+        if (query.length < 2) {
+            setResults([])
+            setSearchWarning(null)
+            return
+        }
 
             const timeout = setTimeout(async () => {
-                setSearching(true) 
+                setSearching(true)
                 try {
-                    const [communityData, usdaData] = await Promise.all([
+                    const [communityResult, usdaResult] = await Promise.allSettled([
                         searchCommunityFoods(query),
                         searchFoods(query)
                     ])
 
-                    const communityResults = (communityData.foods || []).map(food => ({
-                        ...food,
-                        isCommunity: true,
-                        fdcId: food.id,
-                        name: food.name,
-                        brand: food.brand || null
-                    }))
+                    if (communityResult.status === 'rejected') {
+                        console.error('Community food search failed:', communityResult.reason)
+                    }
+                    if (usdaResult.status === 'rejected') {
+                        console.error('USDA food search failed:', usdaResult.reason)
+                    }
 
-                    const usdaResults = (usdaData.foods || []).map(food => ({
-                        ...food,
-                        isCommunity: false
-                    }))
+                    if (communityResult.status === 'rejected' && usdaResult.status === 'rejected') {
+                        setSearchWarning('Food search is temporarily unavailable. Please try again.')
+                    } else if (communityResult.status === 'rejected') {
+                        setSearchWarning('Community food search is temporarily unavailable — showing USDA results only.')
+                    } else if (usdaResult.status === 'rejected') {
+                        setSearchWarning('USDA food search is temporarily unavailable — showing community results only.')
+                    } else {
+                        setSearchWarning(null)
+                    }
+
+                    const communityResults = communityResult.status === 'fulfilled'
+                        ? (communityResult.value.foods || []).map(food => ({
+                            ...food,
+                            isCommunity: true,
+                            fdcId: food.id,
+                            name: food.name,
+                            brand: food.brand || null
+                        }))
+                        : []
+
+                    const usdaResults = usdaResult.status === 'fulfilled'
+                        ? (usdaResult.value.foods || []).map(food => ({
+                            ...food,
+                            isCommunity: false
+                        }))
+                        : []
 
                     const combined = [
                         ...(Array.isArray(communityResults) ? communityResults : []),
                         ...(Array.isArray(usdaResults) ? usdaResults : [])
                     ]
 
-                    setResults(combined) 
+                    setResults(combined)
                 } catch (err) {
-                    console.log(err) 
+                    console.log(err)
                 } finally {
                     setSearching(false)
                 }
@@ -215,6 +247,19 @@ export default function FoodSearch({ date, onClose, defaultMeal = 'snack' }) {
                         </button>
                     </div>
                 </div>
+
+                {/* Partial search failure notice */}
+                {searchWarning && (
+                    <div style={{
+                        padding: '8px 16px',
+                        fontSize: '12px',
+                        color: 'var(--warning)',
+                        background: 'rgba(226,175,74,0.1)',
+                        borderBottom: '1px solid var(--border)'
+                    }}>
+                        ⚠️ {searchWarning}
+                    </div>
+                )}
 
                 {/* Serving size panel - shows when food is selected */}
                 {selectedFood && (
