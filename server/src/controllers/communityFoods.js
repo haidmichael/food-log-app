@@ -68,7 +68,7 @@ export const saveCommunityFood = async (req, res) => {
                 calories: Number(calories),
                 protein: Number(protein),
                 carbs: Number(carbs),
-                fat: Number(carbs),
+                fat: Number(fat),
                 source: source || 'user',
                 createdBy: userId
             }

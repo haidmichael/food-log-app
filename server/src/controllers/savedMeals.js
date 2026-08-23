@@ -22,18 +22,18 @@ export const getSavedMeal = async (req, res) => {
 
         const meal = await prisma.savedMeal.findUnique({
             where: { id },
-            inclued: { item: true}
+            include: { items: true }
         })
 
         if (!meal) {
-            return res.status(400).json({ error: 'Saved meal not found' })
+            return res.status(404).json({ error: 'Saved meal not found' })
         }
 
         if (meal.userId !== req.user.userId) {
             return res.status(403).json({ error: 'Not authorized' })
         }
 
-        res.json(('meals data', JSON.stringify(meals)))
+        res.json(meal)
     } catch (err) {
         console.error(err)
         res.status(500).json({ error: 'Failed to get saved meal'})

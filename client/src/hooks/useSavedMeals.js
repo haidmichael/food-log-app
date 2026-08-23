@@ -23,7 +23,7 @@ export function useSaveAsMeal() {
     return useMutation ({
         mutationFn: saveLoggedMealAsTemplate,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['saveMeals']})
+            queryClient.invalidateQueries({ queryKey: ['savedMeals']})
         }
     })
 }
