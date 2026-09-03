@@ -5,14 +5,7 @@ import WaterTracker from '../components/WaterTracker.jsx'
 import MealSection from '../components/MealSection.jsx'
 import FoodSearch from '../components/FoodSearch.jsx'
 import AIFoodLogger from '../components/AIFoodLogger.jsx'
-
-function getToday() {
-    const now = new Date()
-    const year = now.getFullYear()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-}
+import { getToday, addDays } from '../utils/date.js'
 
 function formatDate(dateStr) {
     const date = new Date(dateStr + 'T12:00:00')
@@ -30,9 +23,7 @@ export default function DashboardPage() {
     const { data: summary, isLoading, isError } = useSummary(date) 
 
     const changeDate = (days) => {
-        const current = new Date(date + 'T12:00:00')
-        current.setDate(current.getDate() + days)
-        setDate(current.toISOString().split('T')[0])
+        setDate(addDays(date, days))
     }
 
     const isToday = date === getToday() 

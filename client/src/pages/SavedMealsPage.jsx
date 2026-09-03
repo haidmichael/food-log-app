@@ -1,6 +1,7 @@
-import { useState } from 'react' 
-import { useNavigate } from 'react-router-dom' 
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSavedMeals, useDeleteSavedMeal, useLogSavedMeal } from '../hooks/useSavedMeals.js'
+import { getToday } from '../utils/date.js'
 
 const mealEmojis = {
   breakfast: '🌅',
@@ -16,7 +17,7 @@ export default function SavedMealsPage() {
 
     const [loggingMeal, setLoggingMeal] = useState(null)
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = getToday()
     const logMeal = useLogSavedMeal(today)
 
     const handleLog = (savedMeal, mealTime) => {
